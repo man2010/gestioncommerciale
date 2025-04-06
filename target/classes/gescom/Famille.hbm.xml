@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Famille" optimistic-lock="none" schema="public" table="famille">
+        <id name="idfamille" type="int">
+            <column name="idfamille"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Famille" fetch="select" name="famille">
+            <column name="fam_idfamille"/>
+        </many-to-one>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+        <property name="code" type="string">
+            <column length="254" name="code"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="produits" table="produit">
+            <key>
+                <column name="idfamille"/>
+            </key>
+            <one-to-many class="gescom.Produit"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="familles" table="famille">
+            <key>
+                <column name="fam_idfamille"/>
+            </key>
+            <one-to-many class="gescom.Famille"/>
+        </set>
+    </class>
+</hibernate-mapping>

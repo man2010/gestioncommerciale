@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Notifications" optimistic-lock="none" schema="public" table="notifications">
+        <id name="idnotifications" type="int">
+            <column name="idnotifications"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Utilisateur" fetch="select" name="utilisateur">
+            <column name="idutilisateur"/>
+        </many-to-one>
+        <property name="emailnotif" type="java.lang.Boolean">
+            <column name="emailnotif"/>
+        </property>
+        <property name="alertesecurite" type="java.lang.Boolean">
+            <column name="alertesecurite"/>
+        </property>
+        <property name="alertetransaction" type="java.lang.Boolean">
+            <column name="alertetransaction"/>
+        </property>
+        <property name="rappelpanier" type="java.lang.Integer">
+            <column name="rappelpanier"/>
+        </property>
+    </class>
+</hibernate-mapping>

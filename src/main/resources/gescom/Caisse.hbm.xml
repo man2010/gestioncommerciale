@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Caisse" optimistic-lock="none" schema="public" table="caisse">
+        <composite-id class="gescom.CaisseId" name="id">
+            <key-property name="idcaisse" type="int">
+                <column name="idcaisse"/>
+            </key-property>
+            <key-property name="numeroserie" type="string">
+                <column length="254" name="numeroserie"/>
+            </key-property>
+        </composite-id>
+        <many-to-one class="gescom.Boutique" fetch="select" name="boutique">
+            <column name="idboutique"/>
+        </many-to-one>
+        <many-to-one class="gescom.Employe" fetch="select" name="employe">
+            <column name="idemploye"/>
+        </many-to-one>
+        <property name="actif" type="java.lang.Boolean">
+            <column name="actif"/>
+        </property>
+        <property name="dateactivation" type="date">
+            <column length="13" name="dateactivation"/>
+        </property>
+        <property name="typecaisse" type="string">
+            <column length="254" name="typecaisse"/>
+        </property>
+        <property name="montantcaisse" type="java.lang.Byte">
+            <column name="montantcaisse" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="sessioncaisses" table="sessioncaisse">
+            <key>
+                <column name="idcaisse"/>
+                <column length="254" name="numeroserie"/>
+            </key>
+            <one-to-many class="gescom.Sessioncaisse"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Stocks</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <style>
+        .stock-container {
+            margin: 20px;
+        }
+        .filter-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .stock-badge {
+            margin-left: 10px;
+        }
+        .low-stock {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .out-of-stock {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Stocks</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" url="/produits/new.xhtml" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:submenu label="Catégories" icon="pi pi-sitemap">
+                    <p:menuitem value="Arborescence" url="/categories/list.xhtml" icon="pi pi-table"/>
+                </p:submenu>
+                <p:submenu label="Familles" icon="pi pi-tags">
+                    <p:menuitem value="Liste des familles" url="/familles/list.xhtml" icon="pi pi-list"/>
+                </p:submenu>
+                <p:menuitem value="Stocks" url="/stocks/list.xhtml" icon="pi pi-cart-plus" expanded="true"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="layout-content">
+            <p:growl id="growl" showDetail="true" sticky="false"/>
+            
+            <div class="stock-container">
+                <!-- Filtres -->
+                <p:panel header="Filtres" toggleable="true" toggleSpeed="500" 
+                        styleClass="filter-panel">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Produit:" for="selectedProduct"/>
+                        <p:selectOneMenu id="selectedProduct" value="#{stockController.selectedProduct}" 
+                                        style="width:100%">
+                            <f:selectItem itemLabel="Tous les produits" itemValue="#{null}"/>
+                            <f:selectItems value="#{stockController.products}" var="prod" 
+                                         itemLabel="#{prod.nom}" itemValue="#{prod}"/>
+                            <p:ajax update="stocksTable" listener="#{stockController.filterStocks}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel value="Statut:" for="selectedStatus"/>
+                        <p:selectOneMenu id="selectedStatus" value="#{stockController.selectedStatus}" 
+                                        style="width:100%">
+                            <f:selectItem itemLabel="Tous" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="En stock" itemValue="IN_STOCK"/>
+                            <f:selectItem itemLabel="Faible stock" itemValue="LOW_STOCK"/>
+                            <f:selectItem itemLabel="Rupture" itemValue="OUT_OF_STOCK"/>
+                            <p:ajax update="stocksTable" listener="#{stockController.filterStocks}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel value="Seuil d'alerte:" for="alertThreshold"/>
+                        <p:inputNumber id="alertThreshold" value="#{stockController.alertThreshold}" 
+                                       minValue="1" style="width:100%">
+                            <p:ajax update="stocksTable" listener="#{stockController.filterStocks}"/>
+                        </p:inputNumber>
+                    </p:panelGrid>
+                </p:panel>
+                
+                <!-- Tableau des stocks -->
+                <p:dataTable id="stocksTable" var="stock" value="#{stockController.filteredStocks}" 
+                            paginator="true" rows="10" emptyMessage="Aucun stock trouvé"
+                            style="margin-top:20px;" rowStyleClass="#{stock.status == 'LOW_STOCK' ? 'low-stock' : stock.status == 'OUT_OF_STOCK' ? 'out-of-stock' : ''}">
+                    
+                    <p:column headerText="Produit" sortBy="#{stock.produit.nom}" filterBy="#{stock.produit.nom}" 
+                             style="width:25%">
+                        <h:outputText value="#{stock.produit.nom}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Référence" sortBy="#{stock.produit.reference}" 
+                             style="width:15%">
+                        <h:outputText value="#{stock.produit.reference}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Quantité" sortBy="#{stock.quantite}" style="width:15%">
+                        <h:outputText value="#{stock.quantite}"/>
+                        <p:badge value="#{stock.status}" severity="#{stock.status == 'IN_STOCK' ? 'success' : stock.status == 'LOW_STOCK' ? 'warning' : 'danger'}" 
+                                styleClass="stock-badge"/>
+                    </p:column>
+                    
+                    <p:column headerText="Seuil minimum" style="width:15%">
+                        <h:outputText value="#{stock.produit.stockMinimal}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Dernière mise à jour" sortBy="#{stock.lastUpdate}" 
+                             style="width:15%">
+                        <h:outputText value="#{stock.lastUpdate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Actions" style="width:15%">
+                        <p:commandButton icon="pi pi-refresh" title="Réapprovisionner"
+                                       styleClass="p-button-text p-button-info"
+                                       onclick="PF('reapproDialog').show();"
+                                       action="#{stockController.prepareReapprovisionnement(stock)}"
+                                       update=":reapproForm"/>
+                    </p:column>
+                </p:dataTable>
+                
+                <!-- Bouton d'export -->
+                <p:toolbar style="margin-top:10px">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Exporter en Excel" icon="pi pi-file-excel" 
+                                       styleClass="p-button-help"
+                                       action="#{stockController.exportToExcel}"/>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton value="Rafraîchir" icon="pi pi-sync"
+                                       action="#{stockController.loadStocks}"
+                                       update="stocksTable"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </div>
+            
+            <!-- Dialogue de réapprovisionnement -->
+            <p:dialog header="Réapprovisionnement" widgetVar="reapproDialog" modal="true" 
+                     width="500" resizable="false" closeOnEscape="true">
+                <h:form id="reapproForm">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Produit:"/>
+                        <p:outputLabel value="#{stockController.selectedStock.produit.nom}" 
+                                     style="font-weight:bold"/>
+                        
+                        <p:outputLabel value="Stock actuel:"/>
+                        <p:outputLabel value="#{stockController.selectedStock.quantite}"/>
+                        
+                        <p:outputLabel value="Quantité à ajouter:" for="quantiteAjoutee"/>
+                        <p:inputNumber id="quantiteAjoutee" value="#{stockController.quantiteAjoutee}" 
+                                       minValue="1" required="true" style="width:100%"
+                                       requiredMessage="La quantité est obligatoire"/>
+                        
+                        <p:outputLabel value="Fournisseur:" for="fournisseur"/>
+                        <p:selectOneMenu id="fournisseur" value="#{stockController.selectedFournisseur}" 
+                                        style="width:100%">
+                            <f:selectItem itemLabel="Sélectionnez un fournisseur" itemValue="#{null}"/>
+                            <f:selectItems value="#{stockController.fournisseurs}" var="fourn" 
+                                         itemLabel="#{fourn.nom}" itemValue="#{fourn}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel value="Date prévue:" for="datePrevue"/>
+                        <p:calendar id="datePrevue" value="#{stockController.datePrevue}" 
+                                   pattern="dd/MM/yyyy" style="width:100%"/>
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Valider" action="#{stockController.processReapprovisionnement}" 
+                                       update=":growl :stocksTable" 
+                                       oncomplete="if(!args.validationFailed) PF('reapproDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('reapproDialog').hide()" 
+                                       styleClass="p-button-secondary" immediate="true"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+            
+            <!-- Dialogue d'historique -->
+            <p:dialog header="Historique des mouvements" widgetVar="historyDialog" modal="true" 
+                     width="800" height="500" resizable="true">
+                <h:form id="historyForm">
+                    <p:dataTable var="mvt" value="#{stockController.mouvements}" 
+                                paginator="true" rows="10" emptyMessage="Aucun mouvement enregistré">
+                        <p:column headerText="Date" sortBy="#{mvt.dateMouvement}">
+                            <h:outputText value="#{mvt.dateMouvement}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Type" sortBy="#{mvt.type}">
+                            <p:tag value="#{mvt.type}" 
+                                  severity="#{mvt.type == 'ENTREE' ? 'success' : 'danger'}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Quantité" sortBy="#{mvt.quantite}">
+                            #{mvt.quantite}
+                        </p:column>
+                        
+                        <p:column headerText="Fournisseur" sortBy="#{mvt.fournisseur.nom}">
+                            #{mvt.fournisseur.nom}
+                        </p:column>
+                        
+                        <p:column headerText="Utilisateur" sortBy="#{mvt.utilisateur.nom}">
+                            #{mvt.utilisateur.nomComplet}
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © 2023</p>
+        </div>
+    </div>
+</h:body>
+</html>

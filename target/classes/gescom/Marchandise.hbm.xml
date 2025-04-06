@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Marchandise" optimistic-lock="none" schema="public" table="marchandise">
+        <id name="idmarchandise" type="int">
+            <column name="idmarchandise"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Boutique" fetch="select" name="boutique">
+            <column name="idboutique"/>
+        </many-to-one>
+        <property name="designation" type="string">
+            <column length="254" name="designation"/>
+        </property>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <property name="code" type="string">
+            <column length="254" name="code"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="pieces" table="piece">
+            <key>
+                <column name="idmarchandise"/>
+            </key>
+            <one-to-many class="gescom.Piece"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="produits" table="produit">
+            <key>
+                <column name="idmarchandise"/>
+            </key>
+            <one-to-many class="gescom.Produit"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="lots" table="lot">
+            <key>
+                <column name="idmarchandise"/>
+            </key>
+            <one-to-many class="gescom.Lot"/>
+        </set>
+    </class>
+</hibernate-mapping>

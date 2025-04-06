@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Vente" optimistic-lock="none" schema="public" table="vente">
+        <id name="idvente" type="int">
+            <column name="idvente"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Employe" fetch="select" name="employe">
+            <column name="idemploye"/>
+        </many-to-one>
+        <many-to-one class="gescom.Lignevente" fetch="select" name="lignevente">
+            <column name="id"/>
+        </many-to-one>
+        <property name="montant" type="java.lang.Byte">
+            <column name="montant" precision="0" scale="0"/>
+        </property>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <set fetch="select" inverse="false" lazy="true" name="collaborateurs" table="collabvente">
+            <key>
+                <column name="idvente" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Collaborateur">
+                <column name="idemploye" not-null="true"/>
+                <column name="idcollab" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="bilans" table="bilan">
+            <key>
+                <column name="idvente"/>
+            </key>
+            <one-to-many class="gescom.Bilan"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="transactions" table="transaction">
+            <key>
+                <column name="idvente"/>
+            </key>
+            <one-to-many class="gescom.Transaction"/>
+        </set>
+    </class>
+</hibernate-mapping>

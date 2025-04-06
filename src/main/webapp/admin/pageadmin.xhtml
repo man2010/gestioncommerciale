@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Administration</title>
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+        }
+        .admin-content {
+            flex: 1;
+            padding: 20px;
+            background: #f5f6fa;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-menu li a:hover {
+            background: #34495e;
+        }
+        .sidebar-menu li a i {
+            margin-right: 10px;
+        }
+        .active-menu {
+            background: #3498db;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div style="text-align: center; padding: 20px 0;">
+                <h3>Administration</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <h:link value="Tableau de bord" outcome="pageadmin" styleClass="#{facesContext.viewRoot.viewId eq 'pageadmin.xhtml' ? 'active-menu' : ''}">
+                        <i class="pi pi-home"></i> Tableau de bord
+                    </h:link>
+                </li>
+                <li>
+                    <h:link value="Utilisateurs" outcome="gestionuser" styleClass="#{facesContext.viewRoot.viewId eq 'gestionuser.xhtml' ? 'active-menu' : ''}">
+                        <i class="pi pi-users"></i> Utilisateurs
+                    </h:link>
+                </li>
+                <li>
+                    <h:link value="Rôles" outcome="gestionrole" styleClass="#{facesContext.viewRoot.viewId eq 'gestionrole.xhtml' ? 'active-menu' : ''}">
+                        <i class="pi pi-shield"></i> Rôles
+                    </h:link>
+                </li>
+                <li>
+                    <h:link value="Familles produits" outcome="gestionfamilleproduit" styleClass="#{facesContext.viewRoot.viewId eq 'gestionfamilleproduit.xhtml' ? 'active-menu' : ''}">
+                        <i class="pi pi-tags"></i> Familles produits
+                    </h:link>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>#{facesContext.viewRoot.viewId eq 'pageadmin.xhtml' ? 'Tableau de bord' : 
+                     facesContext.viewRoot.viewId eq  'gestionuser.xhtml' ? 'Gestion des utilisateurs' : 
+                     facesContext.viewRoot.viewId eq  'gestionrole.xhtml' ? 'Gestion des rôles' : 
+                     facesContext.viewRoot.viewId eq  'gestionfamilleproduit.xhtml' ? 'Gestion des familles produits'}</h2>
+                <div>
+                    <p:commandButton value="Déconnexion" action="#{utilisateurBean.logout}" 
+                                    icon="pi pi-sign-out" styleClass="p-button-danger"/>
+                </div>
+            </div>
+
+            <p:growl id="growl" showDetail="true" sticky="true" />
+            
+            <ui:insert name="content">Contenu par défaut</ui:insert>
+        </div>
+    </div>
+</h:body>
+</html>

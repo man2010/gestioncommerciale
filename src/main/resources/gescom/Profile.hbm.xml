@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Profile" optimistic-lock="none" schema="public" table="profile">
+        <id name="idprofile" type="int">
+            <column name="idprofile"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Compteutilisateur" fetch="select" name="compteutilisateur">
+            <column name="idcompte" not-null="true"/>
+        </many-to-one>
+        <property name="libelle" type="string">
+            <column length="254" name="libelle"/>
+        </property>
+        <property name="etat" type="java.lang.Boolean">
+            <column name="etat"/>
+        </property>
+        <property name="code" type="string">
+            <column length="254" name="code"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+    </class>
+</hibernate-mapping>

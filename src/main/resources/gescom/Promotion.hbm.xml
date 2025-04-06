@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Promotion" optimistic-lock="none" schema="public" table="promotion">
+        <id name="idpromotion" type="int">
+            <column name="idpromotion"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Boutique" fetch="select" name="boutique">
+            <column name="idboutique"/>
+        </many-to-one>
+        <many-to-one class="gescom.Periode" fetch="select" name="periode">
+            <column name="idperiode"/>
+        </many-to-one>
+        <property name="description" type="string">
+            <column name="description"/>
+        </property>
+        <property name="date" type="date">
+            <column length="13" name="date"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.password">mansour</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/gescomdb</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.hbm2ddl.auto">none</property>
+        <property name="hibernate.search.autoregister_listeners">true</property>
+        <property name="hibernate.validator.apply_to_ddl">false</property>
+<!--         <mapping resource="gescom/Typecontrat.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Catalogue.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Piece.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Boutique.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Archiveactiviteboutique.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Preference.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Livraison.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Stock.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Collaborateur.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Sessioncaisse.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Solde.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Employe.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Fluctuationprix.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Typeconge.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Patronboutique.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Periode.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Caisse.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Famille.hbm.xml"/>  -->
+<!--         <mapping resource="gescom/Marchandise.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Avis.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Permission.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Poste.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Session.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Villes.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Typecollaborateur.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Lignecommande.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Categorievariete.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Varietesalaire.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Contrat.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Approvisionnement.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Commande.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Variete.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Lignevente.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Configurationboutique.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Profile.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Produit.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Compteutilisateur.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Journalactivite.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Ligneapprovisionnement.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Bilan.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Evenement.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Origine.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Promotion.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Horairetravail.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Article.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Horaireboutique.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Pays.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Transaction.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Typeutilisateur.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Client.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Salaire.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Rapport.hbm.xml"/> -->
+          
+<!--         <mapping resource="gescom/Conge.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Notifications.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Motif.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Vente.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Augmentationsalaire.hbm.xml"/> -->
+<!--         <mapping resource="gescom/Lot.hbm.xml"/> -->
+            
+<!--         <mapping resource="gescom/Gestionnaireboutiques.hbm.xml"/> -->
+
+
+			 <mapping class="com.gescom.model.Role"/>
+			 <mapping class="com.gescom.model.Utilisateur"/>
+			 <mapping class="com.gescom.model.Famille"/>
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Approvisionnements</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <style>
+        .appro-container {
+            margin: 20px;
+        }
+        .appro-detail-label {
+            font-weight: bold;
+            padding-right: 10px;
+        }
+        .ligne-table {
+            margin-top: 15px;
+        }
+        .total-appro {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Approvisionnements</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" url="/produits/new.xhtml" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:submenu label="Stocks" icon="pi pi-cart-plus">
+                    <p:menuitem value="Niveaux de stock" url="/stocks/list.xhtml" icon="pi pi-chart-bar"/>
+                    <p:menuitem value="Lots" url="/lots/list.xhtml" icon="pi pi-box"/>
+                </p:submenu>
+                <p:menuitem value="Approvisionnements" url="/approvisionnements/list.xhtml" icon="pi pi-truck" expanded="true"/>
+                <p:menuitem value="Fournisseurs" url="/fournisseurs/list.xhtml" icon="pi pi-users"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="layout-content">
+            <p:growl id="growl" showDetail="true" sticky="false"/>
+            
+            <div class="appro-container">
+                <!-- Barre d'outils -->
+                <p:toolbar style="margin-bottom:20px">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nouvel approvisionnement" icon="pi pi-plus"
+                                       styleClass="p-button-success"
+                                       action="#{approController.initNewAppro()}" 
+                                       update=":approForm" oncomplete="PF('approDialog').show()"/>
+                    </p:toolbarGroup>
+                    
+                    <p:toolbarGroup align="right">
+                        <p:selectOneMenu value="#{approController.filterStatut}" style="width:200px">
+                            <f:selectItem itemLabel="Tous les statuts" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="En préparation" itemValue="PREPARATION"/>
+                            <f:selectItem itemLabel="En cours" itemValue="EN_COURS"/>
+                            <f:selectItem itemLabel="Livré" itemValue="LIVRE"/>
+                            <f:selectItem itemLabel="Annulé" itemValue="ANNULE"/>
+                        </p:selectOneMenu>
+                        
+                        <p:commandButton value="Filtrer" icon="pi pi-filter" styleClass="p-button-outlined"
+                                       action="#{approController.loadApprovisionnements()}"
+                                       update="approTable"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                
+                <!-- Tableau des approvisionnements -->
+                <p:dataTable id="approTable" var="appro" value="#{approController.filteredApprovisionnements}" 
+                            paginator="true" rows="10" selectionMode="single"
+                            selection="#{approController.selectedAppro}" rowKey="#{appro.id}"
+                            emptyMessage="Aucun approvisionnement trouvé">
+                    
+                    <p:column headerText="Référence" sortBy="#{appro.reference}" filterBy="#{appro.reference}" 
+                             style="width:15%">
+                        #{appro.reference}
+                    </p:column>
+                    
+                    <p:column headerText="Date" sortBy="#{appro.dateCreation}" style="width:12%">
+                        <h:outputText value="#{appro.dateCreation}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Fournisseur" sortBy="#{appro.fournisseur.nom}" style="width:20%">
+                        #{appro.fournisseur.nom}
+                    </p:column>
+                    
+                    <p:column headerText="Montant total" sortBy="#{appro.montantTotal}" style="width:15%">
+                        <h:outputText value="#{appro.montantTotal}">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Statut" sortBy="#{appro.statut}" style="width:15%">
+                        <p:tag value="#{appro.statut}" 
+                              severity="#{appro.statut == 'LIVRE' ? 'success' : appro.statut == 'ANNULE' ? 'danger' : 'info'}"
+                              style="width:100%"/>
+                    </p:column>
+                    
+                    <p:column headerText="Actions" style="width:23%">
+                        <p:commandButton icon="pi pi-eye" title="Détails" styleClass="p-button-text p-button-info"
+                                       action="#{approController.viewAppro(appro)}" 
+                                       update=":approDetailForm" 
+                                       oncomplete="PF('approDetailDialog').show()"/>
+                        
+                        <p:commandButton icon="pi pi-file-pdf" title="Bon de commande"
+                                       styleClass="p-button-text p-button-help"
+                                       action="#{approController.generateBonCommande(appro)}"/>
+                        
+                        <p:commandButton icon="pi pi-truck" title="Livraison" 
+                                       rendered="#{appro.statut == 'EN_COURS'}"
+                                       styleClass="p-button-text p-button-warning"
+                                       action="#{approController.prepareLivraison(appro)}" 
+                                       update=":livraisonForm"
+                                       oncomplete="PF('livraisonDialog').show()"/>
+                        
+                        <p:commandButton icon="pi pi-times" title="Annuler"
+                                       rendered="#{appro.statut == 'PREPARATION' or appro.statut == 'EN_COURS'}"
+                                       styleClass="p-button-text p-button-danger"
+                                       action="#{approController.annulerApprovisionnement(appro)}"
+                                       update=":growl :approTable"/>
+                    </p:column>
+                </p:dataTable>
+                
+                <!-- Dialogue de détail -->
+                <p:dialog header="Détails Approvisionnement" widgetVar="approDetailDialog" modal="true" 
+                         width="800" height="500" resizable="true" closeOnEscape="true">
+                    <h:form id="approDetailForm">
+                        <ui:fragment rendered="#{not empty approController.selectedAppro}">
+                            <p:panelGrid columns="2" layout="grid" style="width:100%">
+                                <p:outputLabel value="Référence:" styleClass="appro-detail-label"/>
+                                <p:outputLabel value="#{approController.selectedAppro.reference}"/>
+                                
+                                <p:outputLabel value="Statut:" styleClass="appro-detail-label"/>
+                                <p:outputLabel value="#{approController.selectedAppro.statut}">
+                                    <p:tag value="#{approController.selectedAppro.statut}" 
+                                          severity="#{approController.selectedAppro.statut == 'LIVRE' ? 'success' : approController.selectedAppro.statut == 'ANNULE' ? 'danger' : 'info'}"/>
+                                </p:outputLabel>
+                                
+                                <p:outputLabel value="Date création:" styleClass="appro-detail-label"/>
+                                <p:outputLabel value="#{approController.selectedAppro.dateCreation}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </p:outputLabel>
+                                
+                                <p:outputLabel value="Date livraison prévue:" styleClass="appro-detail-label"/>
+                                <p:outputLabel value="#{approController.selectedAppro.dateLivraisonPrevue}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                                
+                                <p:outputLabel value="Date livraison:" styleClass="appro-detail-label" 
+                                             rendered="#{approController.selectedAppro.statut == 'LIVRE'}"/>
+                                <p:outputLabel value="#{approController.selectedAppro.dateLivraison}" 
+                                             rendered="#{approController.selectedAppro.statut == 'LIVRE'}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </p:outputLabel>
+                                
+                                <p:outputLabel value="N° bon livraison:" styleClass="appro-detail-label" 
+                                             rendered="#{approController.selectedAppro.statut == 'LIVRE'}"/>
+                                <p:outputLabel value="#{approController.selectedAppro.numeroBonLivraison}" 
+                                             rendered="#{approController.selectedAppro.statut == 'LIVRE'}"/>
+                                
+                                <p:outputLabel value="Commentaire:" styleClass="appro-detail-label" 
+                                             rendered="#{not empty approController.selectedAppro.commentaire}"/>
+                                <p:outputLabel value="#{approController.selectedAppro.commentaire}" 
+                                             rendered="#{not empty approController.selectedAppro.commentaire}"/>
+                            </p:panelGrid>
+                            
+                            <p:dataTable var="ligne" value="#{approController.selectedAppro.lignes}" 
+                                        styleClass="ligne-table" emptyMessage="Aucune ligne d'approvisionnement">
+                                <p:column headerText="Produit" style="width:30%">#{ligne.produit.nom}</p:column>
+                                <p:column headerText="Quantité" style="width:15%">#{ligne.quantite}</p:column>
+                                <p:column headerText="Prix unitaire" style="width:20%">
+                                    <h:outputText value="#{ligne.prixUnitaire}">
+                                        <f:convertNumber type="currency" currencySymbol="€"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Total" style="width:20%">
+                                    <h:outputText value="#{ligne.prixUnitaire * ligne.quantite}">
+                                        <f:convertNumber type="currency" currencySymbol="€"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Livré" style="width:15%" 
+                                         rendered="#{approController.selectedAppro.statut == 'LIVRE'}">
+                                    #{ligne.quantiteLivree}/#{ligne.quantite}
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <div class="total-appro">
+                                Total: 
+                                <h:outputText value="#{approController.selectedAppro.montantTotal}">
+                                    <f:convertNumber type="currency" currencySymbol="€"/>
+                                </h:outputText>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </p:dialog>
+                
+                <!-- Dialogue de création/modification -->
+                <p:dialog header="Nouvel Approvisionnement" widgetVar="approDialog" modal="true" 
+                         width="900" height="600" resizable="false" closeOnEscape="false">
+                    <h:form id="approForm">
+                        <p:wizard flowListener="#{approController.onFlowProcess}">
+                            <p:tab title="Fournisseur">
+                                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                                    <p:outputLabel for="fournisseur" value="Fournisseur:"/>
+                                    <p:selectOneMenu id="fournisseur" value="#{approController.currentAppro.fournisseur}" 
+                                                   required="true" style="width:100%"
+                                                   requiredMessage="Le fournisseur est obligatoire">
+                                        <f:selectItem itemLabel="Sélectionnez un fournisseur" itemValue="#{null}"/>
+                                        <f:selectItems value="#{approController.fournisseurs}" var="fourn" 
+                                                      itemLabel="#{fourn.nom}" itemValue="#{fourn}"/>
+                                    </p:selectOneMenu>
+                                    
+                                    <p:outputLabel for="dateLivraisonPrev" value="Date livraison prévue:"/>
+                                    <p:calendar id="dateLivraisonPrev" value="#{approController.currentAppro.dateLivraisonPrevue}" 
+                                               required="true" pattern="dd/MM/yyyy" navigator="true" style="width:100%"
+                                               requiredMessage="La date de livraison prévue est obligatoire"/>
+                                </p:panelGrid>
+                            </p:tab>
+                            
+                            <p:tab title="Produits">
+                                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                                    <p:outputLabel for="produit" value="Produit:"/>
+                                    <p:autoComplete id="produit" value="#{approController.selectedProduit}" 
+                                                   completeMethod="#{approController.completeProduit}" 
+                                                   var="p" itemLabel="#{p.nom}" itemValue="#{p}" 
+                                                   forceSelection="true" style="width:100%"/>
+                                    
+                                    <p:outputLabel for="quantite" value="Quantité:"/>
+                                    <p:inputNumber id="quantite" value="#{approController.quantite}" 
+                                                 minValue="1" integerOnly="true" style="width:100%"/>
+                                    
+                                    <p:outputLabel for="prix" value="Prix unitaire:"/>
+                                    <p:inputNumber id="prix" value="#{approController.prixUnitaire}" 
+                                                 minValue="0.01" decimalPlaces="2" style="width:100%"/>
+                                    
+                                    <p:commandButton value="Ajouter" icon="pi pi-plus" 
+                                                   action="#{approController.addLigne()}" 
+                                                   update=":approForm:lignesTable :approForm:produit :approForm:quantite :approForm:prix"/>
+                                </p:panelGrid>
+                                
+                                <p:dataTable id="lignesTable" var="ligne" 
+                                            value="#{approController.currentAppro.lignes}" 
+                                            emptyMessage="Aucun produit ajouté"
+                                            styleClass="ligne-table">
+                                    <p:column headerText="Produit" style="width:40%">#{ligne.produit.nom}</p:column>
+                                    <p:column headerText="Quantité" style="width:15%">#{ligne.quantite}</p:column>
+                                    <p:column headerText="Prix unitaire" style="width:20%">
+                                        <h:outputText value="#{ligne.prixUnitaire}">
+                                            <f:convertNumber type="currency" currencySymbol="€"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Total" style="width:20%">
+                                        <h:outputText value="#{ligne.prixUnitaire * ligne.quantite}">
+                                            <f:convertNumber type="currency" currencySymbol="€"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column style="width:5%">
+                                        <p:commandButton icon="pi pi-trash" styleClass="p-button-text p-button-danger"
+                                                       action="#{approController.removeLigne(ligne)}" 
+                                                       update=":approForm:lignesTable"/>
+                                    </p:column>
+                                </p:dataTable>
+                                
+                                <div class="total-appro">
+                                    Total: 
+                                    <h:outputText value="#{approController.currentAppro.montantTotal}">
+                                        <f:convertNumber type="currency" currencySymbol="€"/>
+                                    </h:outputText>
+                                </div>
+                            </p:tab>
+                            
+                            <p:tab title="Validation">
+                                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                                    <p:outputLabel value="Fournisseur:" styleClass="appro-detail-label"/>
+                                    <p:outputLabel value="#{approController.currentAppro.fournisseur.nom}"/>
+                                    
+                                    <p:outputLabel value="Date livraison prévue:" styleClass="appro-detail-label"/>
+                                    <p:outputLabel value="#{approController.currentAppro.dateLivraisonPrevue}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                    
+                                    <p:outputLabel value="Nombre de produits:" styleClass="appro-detail-label"/>
+                                    <p:outputLabel value="#{approController.currentAppro.lignes.size()}"/>
+                                    
+                                    <p:outputLabel value="Montant total:" styleClass="appro-detail-label"/>
+                                    <p:outputLabel value="#{approController.currentAppro.montantTotal}" style="font-weight:bold">
+                                        <f:convertNumber type="currency" currencySymbol="€"/>
+                                    </p:outputLabel>
+                                    
+                                    <p:outputLabel for="commentaire" value="Commentaire:" styleClass="appro-detail-label"/>
+                                    <p:inputTextarea id="commentaire" value="#{approController.currentAppro.commentaire}" 
+                                                   rows="3" style="width:100%"/>
+                                </p:panelGrid>
+                                
+                                <p:commandButton value="Enregistrer" icon="pi pi-save" 
+                                               action="#{approController.saveApprovisionnement()}" 
+                                               styleClass="p-mt-3"
+                                               update=":growl :approTable"
+                                               oncomplete="if(!args.validationFailed) PF('approDialog').hide()"/>
+                            </p:tab>
+                        </p:wizard>
+                    </h:form>
+                </p:dialog>
+                
+                <!-- Dialogue de livraison -->
+                <p:dialog header="Enregistrer Livraison" widgetVar="livraisonDialog" modal="true" 
+                         width="700" resizable="false" closeOnEscape="true">
+                    <h:form id="livraisonForm">
+                        <p:panelGrid columns="2" layout="grid" style="width:100%">
+                            <p:outputLabel value="Référence:" styleClass="appro-detail-label"/>
+                            <p:outputLabel value="#{approController.currentAppro.reference}"/>
+                            
+                            <p:outputLabel for="dateLivraison" value="Date livraison:" styleClass="appro-detail-label"/>
+                            <p:calendar id="dateLivraison" value="#{approController.currentAppro.dateLivraison}" 
+                                       required="true" pattern="dd/MM/yyyy HH:mm" timeOnly="false" 
+                                       navigator="true" style="width:100%"
+                                       requiredMessage="La date de livraison est obligatoire"/>
+                            
+                            <p:outputLabel for="numBonLivraison" value="N° bon livraison:" styleClass="appro-detail-label"/>
+                            <p:inputText id="numBonLivraison" value="#{approController.currentAppro.numeroBonLivraison}" 
+                                        required="true" style="width:100%"
+                                        requiredMessage="Le numéro de bon de livraison est obligatoire"/>
+                        </p:panelGrid>
+                        
+                        <p:dataTable var="ligne" value="#{approController.currentAppro.lignes}" 
+                                    styleClass="ligne-table">
+                            <p:column headerText="Produit" style="width:40%">#{ligne.produit.nom}</p:column>
+                            <p:column headerText="Quantité commandée" style="width:20%">#{ligne.quantite}</p:column>
+                            <p:column headerText="Quantité livrée" style="width:20%">
+                                <p:inputNumber value="#{ligne.quantiteLivree}" minValue="0" 
+                                             maxValue="#{ligne.quantite}" integerOnly="true" style="width:100%"/>
+                            </p:column>
+                            <p:column headerText="Numéro lot" style="width:20%">
+                                <p:inputText value="#{ligne.numeroLot}" style="width:100%"/>
+                            </p:column>
+                        </p:dataTable>
+                        
+                        <f:facet name="footer">
+                            <p:commandButton value="Valider livraison" icon="pi pi-check"
+                                           action="#{approController.validerLivraison()}" 
+                                           update=":growl :approTable"
+                                           oncomplete="if(!args.validationFailed) PF('livraisonDialog').hide()"/>
+                            <p:commandButton value="Annuler" icon="pi pi-times"
+                                           onclick="PF('livraisonDialog').hide()" 
+                                           styleClass="p-button-secondary"/>
+                        </f:facet>
+                    </h:form>
+                </p:dialog>
+            </div>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © 2023</p>
+        </div>
+    </div>
+</h:body>
+</html>

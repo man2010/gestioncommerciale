@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Déclarations de beans -->
+    <bean id="role" class="com.gescom.model.Role"/>
+    <bean id="rolehome" class="com.gescom.dao.RoleHome"/>
+    
+    <bean id="utilisateur" class="com.gescom.model.Utilisateur"/>
+    <bean id="utilisateurhome" class="com.gescom.dao.UtilisateurHome"/>
+    
+    <bean id="famille" class="com.gescom.model.Famille" scope="prototype"/>
+    <bean id="famillehome" class="com.gescom.dao.FamilleHome"/>
+    <bean id="familleBean" class="com.gescom.beans.FamilleBean" scope="view"/>
+</beans>

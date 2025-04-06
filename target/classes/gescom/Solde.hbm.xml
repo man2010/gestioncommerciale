@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Solde" optimistic-lock="none" schema="public" table="solde">
+        <id name="idsolde" type="int">
+            <column name="idsolde"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Boutique" fetch="select" name="boutique">
+            <column name="idboutique"/>
+        </many-to-one>
+        <property name="montant" type="java.lang.Byte">
+            <column name="montant" precision="0" scale="0"/>
+        </property>
+    </class>
+</hibernate-mapping>

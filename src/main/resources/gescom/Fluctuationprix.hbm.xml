@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Fluctuationprix" optimistic-lock="none" schema="public" table="fluctuationprix">
+        <id name="idhistorique" type="int">
+            <column name="idhistorique"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="ancienprix" type="java.lang.Byte">
+            <column name="ancienprix" precision="0" scale="0"/>
+        </property>
+        <property name="nouveauprix" type="java.lang.Byte">
+            <column name="nouveauprix" precision="0" scale="0"/>
+        </property>
+        <property name="datechangement" type="date">
+            <column length="13" name="datechangement"/>
+        </property>
+        <property name="raison" type="string">
+            <column length="254" name="raison"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="periodes" table="augmentationprix">
+            <key>
+                <column name="idhistorique" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Periode">
+                <column name="idperiode" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="pieces" table="variationprixarticle">
+            <key>
+                <column name="idhistorique" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Piece">
+                <column name="idpiece" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

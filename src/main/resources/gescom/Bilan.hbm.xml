@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Bilan" optimistic-lock="none" schema="public" table="bilan">
+        <id name="idbilan" type="int">
+            <column name="idbilan"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Vente" fetch="select" name="vente">
+            <column name="idvente"/>
+        </many-to-one>
+        <property name="datedebut" type="date">
+            <column length="13" name="datedebut"/>
+        </property>
+        <property name="datefin" type="date">
+            <column length="13" name="datefin"/>
+        </property>
+        <property name="type" type="string">
+            <column length="254" name="type"/>
+        </property>
+        <property name="chiffreaffaire" type="java.lang.Byte">
+            <column name="chiffreaffaire" precision="0" scale="0"/>
+        </property>
+        <property name="beneficebrut" type="java.lang.Byte">
+            <column name="beneficebrut" precision="0" scale="0"/>
+        </property>
+        <property name="charge" type="java.lang.Byte">
+            <column name="charge" precision="0" scale="0"/>
+        </property>
+        <property name="benefivenet" type="java.lang.Byte">
+            <column name="benefivenet" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="transactions" table="transaction">
+            <key>
+                <column name="idbilan"/>
+            </key>
+            <one-to-many class="gescom.Transaction"/>
+        </set>
+    </class>
+</hibernate-mapping>

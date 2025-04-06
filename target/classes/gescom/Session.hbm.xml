@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Session" optimistic-lock="none" schema="public" table="session">
+        <id name="idhistorique" type="int">
+            <column name="idhistorique"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Journalactivite" fetch="select" name="journalactivite">
+            <column name="idjournal" not-null="true"/>
+        </many-to-one>
+        <many-to-one class="gescom.Utilisateur" fetch="select" name="utilisateur">
+            <column name="idutilisateur"/>
+        </many-to-one>
+        <property name="dateconnexion" type="timestamp">
+            <column length="29" name="dateconnexion"/>
+        </property>
+        <property name="datedeconnexion" type="timestamp">
+            <column length="29" name="datedeconnexion"/>
+        </property>
+        <property name="adresseip" type="string">
+            <column length="254" name="adresseip"/>
+        </property>
+        <property name="navigateur" type="string">
+            <column length="254" name="navigateur"/>
+        </property>
+        <property name="systemeexploitation" type="string">
+            <column length="254" name="systemeexploitation"/>
+        </property>
+        <property name="statut" type="string">
+            <column length="254" name="statut"/>
+        </property>
+    </class>
+</hibernate-mapping>

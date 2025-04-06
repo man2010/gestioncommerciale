@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestion des Clients</h1>
+        
+        <p:dataTable var="client" value="#{clientController.clients}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{clientController.selectedClient}" rowKey="#{client.id}">
+            
+            <p:column headerText="ID" sortBy="#{client.id}">#{client.id}</p:column>
+            
+            <p:column headerText="Nom" sortBy="#{client.nom}">
+                #{client.nom} #{client.prenom}
+            </p:column>
+            
+            <p:column headerText="Email" sortBy="#{client.email}">#{client.email}</p:column>
+            
+            <p:column headerText="Téléphone" sortBy="#{client.telephone}">#{client.telephone}</p:column>
+            
+            <p:column headerText="Commandes" sortBy="#{client.commandes.size()}">
+                #{client.commandes.size()}
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:120px">
+                <p:commandButton icon="pi pi-eye" styleClass="p-button-text p-button-info"
+                               action="#{clientController.viewClient(client)}" update=":clientDetail"/>
+                <p:commandButton icon="pi pi-pencil" styleClass="p-button-text p-button-warning"/>
+            </p:column>
+        </p:dataTable>
+        
+        <p:dialog header="Détails Client" widgetVar="clientDialog" modal="true" width="600">
+            <p:outputPanel id="clientDetail">
+                <ui:fragment rendered="#{not empty clientController.selectedClient}">
+                    <!-- Détails du client -->
+                </ui:fragment>
+            </p:outputPanel>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

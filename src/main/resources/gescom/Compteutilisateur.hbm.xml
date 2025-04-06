@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Compteutilisateur" optimistic-lock="none" schema="public" table="compteutilisateur">
+        <id name="idcompte" type="int">
+            <column name="idcompte"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Utilisateur" fetch="select" name="utilisateur">
+            <column name="idutilisateur" not-null="true"/>
+        </many-to-one>
+        <property name="login" type="string">
+            <column length="254" name="login"/>
+        </property>
+        <property name="motpasse" type="string">
+            <column length="254" name="motpasse"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="datecreation" type="timestamp">
+            <column length="29" name="datecreation"/>
+        </property>
+        <property name="codesecret" type="string">
+            <column length="254" name="codesecret"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="profiles" table="profile">
+            <key>
+                <column name="idcompte" not-null="true"/>
+            </key>
+            <one-to-many class="gescom.Profile"/>
+        </set>
+    </class>
+</hibernate-mapping>

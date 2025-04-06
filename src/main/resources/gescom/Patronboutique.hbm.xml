@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Patronboutique" optimistic-lock="none" schema="public" table="patronboutique">
+        <id name="idpatron" type="int">
+            <column name="idpatron"/>
+            <generator class="assigned"/>
+        </id>
+        <set fetch="select" inverse="true" lazy="true" name="employes" table="employe">
+            <key>
+                <column name="idpatron"/>
+            </key>
+            <one-to-many class="gescom.Employe"/>
+        </set>
+    </class>
+</hibernate-mapping>

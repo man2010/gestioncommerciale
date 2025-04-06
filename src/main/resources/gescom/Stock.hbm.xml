@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Stock" optimistic-lock="none" schema="public" table="stock">
+        <id name="idstock" type="int">
+            <column name="idstock"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Boutique" fetch="select" name="boutique">
+            <column name="idboutique"/>
+        </many-to-one>
+        <many-to-one class="gescom.Employe" fetch="select" name="employe">
+            <column name="idemploye"/>
+        </many-to-one>
+        <property name="designation" type="string">
+            <column length="254" name="designation"/>
+        </property>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <property name="quantiteenstock" type="java.lang.Integer">
+            <column name="quantiteenstock"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="quantiterestance" type="java.lang.Integer">
+            <column name="quantiterestance"/>
+        </property>
+        <property name="depenses" type="java.lang.Byte">
+            <column name="depenses" precision="0" scale="0"/>
+        </property>
+        <property name="ventecumul" type="java.lang.Byte">
+            <column name="ventecumul" precision="0" scale="0"/>
+        </property>
+        <property name="benefices" type="java.lang.Byte">
+            <column name="benefices" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="lots" table="lot">
+            <key>
+                <column name="idstock"/>
+            </key>
+            <one-to-many class="gescom.Lot"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="produits" table="produit">
+            <key>
+                <column name="idstock"/>
+            </key>
+            <one-to-many class="gescom.Produit"/>
+        </set>
+    </class>
+</hibernate-mapping>

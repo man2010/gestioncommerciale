@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Analyse des Ventes</h1>
+        
+        <p:panelGrid columns="2" layout="grid" style="width:100%">
+            <p:chart type="bar" model="#{statController.ventesChartModel}" style="width:100%"/>
+            <p:chart type="pie" model="#{statController.produitsChartModel}" style="width:100%"/>
+            
+            <p:chart type="line" model="#{statController.tendanceChartModel}" style="width:100%"/>
+            <p:dataTable var="stat" value="#{statController.topVentes}" style="width:100%">
+                <!-- Tableau des meilleures ventes -->
+            </p:dataTable>
+        </p:panelGrid>
+        
+        <p:panel header="Filtres" toggleable="true" collapsed="true">
+            <!-- Filtres période, etc. -->
+        </p:panel>
+    </ui:define>
+</ui:composition>

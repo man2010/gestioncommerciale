@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Connexion - Système Multi-Boutiques</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-light: #FF8C33;
+            --primary-dark: #E65C00;
+            --secondary-color: #FF9D2C;
+            --dark-color: #333333;
+            --light-color: #f5f6fa;
+            --success-color: #4CD964;
+            --error-color: #FF3B30;
+            --warning-color: #FFCC00;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            font-family: 'Poppins', sans-serif; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+        
+        .login-wrapper {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .illustration-section {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(255, 106, 0, 0.9) 0%, rgba(230, 92, 0, 0.9) 100%),
+                    url('images/logo.jpg') center/cover;
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .illustration-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+        
+        .illustration-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .illustration-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .illustration-section p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .features-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .features-list li i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+        
+        .login-container {
+            flex: 1;
+            background: white;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-header h1 {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .p-field {
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+        }
+        
+        .p-inputtext {
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+        
+        .p-input-icon-left, .p-input-icon-right {
+            position: relative;
+            width: 100%;
+        }
+        
+        .p-input-icon-left i, .p-input-icon-right i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-light);
+        }
+        
+        .p-input-icon-left i {
+            left: 12px;
+        }
+        
+        .p-input-icon-right i {
+            right: 12px;
+        }
+        
+        .p-inputtext {
+            padding: 12px 15px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+        
+        .p-inputtext:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.2);
+        }
+        
+        .p-password input {
+            padding-right: 40px;
+        }
+        
+        .p-password-panel {
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .p-button {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            border: none;
+            color: white;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+        }
+        
+        .p-button:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+        
+        .p-button:active {
+            transform: translateY(0);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .register-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .form-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .facebook {
+            background: #3b5998;
+        }
+        
+        .google {
+            background: #db4437;
+        }
+        
+        .twitter {
+            background: #1da1f2;
+        }
+        
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+            
+            .illustration-section {
+                display: none;
+            }
+            
+            .login-container {
+                padding: 40px 30px;
+            }
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me p-selectbooleancheckbox {
+            margin-right: 10px;
+        }
+        
+        .remember-me label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="login-wrapper animate__animated animate__fadeIn">
+        <div class="illustration-section">
+            <div class="illustration-content">
+                <h2>Bienvenue à nouveau</h2>
+                <p>Connectez-vous pour accéder à votre tableau de bord et gérer vos boutiques en toute simplicité.</p>
+                
+                <ul class="features-list">
+                    <li><i class="pi pi-check-circle"></i> Accès à toutes vos boutiques</li>
+                    <li><i class="pi pi-chart-line"></i> Statistiques en temps réel</li>
+                    <li><i class="pi pi-shield"></i> Sécurité garantie</li>
+                    <li><i class="pi pi-headset"></i> Support disponible 24/7</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Connexion</h1>
+                <p>Entrez vos identifiants pour accéder à votre compte</p>
+            </div>
+            
+            <h:form id="loginForm">
+                <p:messages autoUpdate="true" closable="true" showDetail="true" 
+                           styleClass="p-mb-4" severity="error,warn" />
+                
+                <div class="p-fluid">
+                    <div class="p-field">
+                        <p:inputText id="email" value="#{utilisateurBean.utilisateur.email}"
+                                    placeholder="Adresse email" 
+                                    required="true"
+                                    validatorMessage="Email invalide"
+                                    requiredMessage="Email requis"
+                                    styleClass="p-input-icon-left">
+                            <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+                            <i class="pi pi-envelope"></i>
+                        </p:inputText>
+                    </div>
+                    
+                    <div class="p-field">
+                        <p:password id="motpass" value="#{utilisateurBean.utilisateur.motpass}"
+                                   placeholder="Mot de passe" 
+                                   required="true"
+                                   requiredMessage="Mot de passe requis"
+                                   toggleMask="true"
+                                   styleClass="p-input-icon-left p-input-icon-right">
+                            <i class="pi pi-lock"></i>
+                        </p:password>
+                    </div>
+                    
+<!--                     <div class="remember-me"> -->
+<!--                         <p:selectBooleanCheckbox id="remember" value="#{utilisateurBean.rememberMe}" /> -->
+<!--                         <label for="remember">Se souvenir de moi</label> -->
+<!--                     </div> -->
+                    
+                    <div class="forgot-password">
+                        <h:link value="Mot de passe oublié ?" outcome="forgot-password" />
+                    </div>
+                    
+                    <p:commandButton value="Se connecter" 
+                                   icon="pi pi-sign-in"
+                                   styleClass="p-button-raised"
+                                   action="#{utilisateurBean.connexion()}"
+                                   update="@form messages"/>
+                    
+                    <div class="register-link">
+                        Pas encore membre? <h:link value="Créez un compte" outcome="register2" />
+                    </div>
+                    
+                    <div class="form-footer">
+                        <p>En vous connectant, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a>.</p>
+                    </div>
+                    
+                    <div class="social-login">
+                        <a href="#" class="social-btn facebook"><i class="pi pi-facebook"></i></a>
+                        <a href="#" class="social-btn google"><i class="pi pi-google"></i></a>
+                        <a href="#" class="social-btn twitter"><i class="pi pi-twitter"></i></a>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

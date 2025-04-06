@@ -1,0 +1,177 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Commandes Clients</h1>
+        
+        <p:accordionPanel multiple="true" activeIndex="0" style="margin-bottom:20px">
+            <p:tab title="Filtres">
+                <p:panelGrid columns="3" layout="grid" style="width:100%">
+                    <p:outputLabel for="client" value="Client:"/>
+                    <p:autoComplete id="client" value="#{commandeController.selectedClient}" 
+                                  completeMethod="#{commandeController.completeClient}" 
+                                  var="c" itemLabel="#{c.nom} #{c.prenom} (#{c.email})" itemValue="#{c}" 
+                                  forceSelection="true"/>
+                    
+                    <p:commandButton value="Réinitialiser" icon="pi pi-refresh" 
+                                   action="#{commandeController.resetClientFilter()}" 
+                                   styleClass="p-button-outlined"/>
+                    
+                    <p:outputLabel for="statut" value="Statut:"/>
+                    <p:selectOneMenu id="statut" value="#{commandeController.selectedStatut}">
+                        <f:selectItem itemLabel="Tous statuts" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="En attente" itemValue="EN_ATTENTE"/>
+                        <f:selectItem itemLabel="Validée" itemValue="VALIDEE"/>
+                        <f:selectItem itemLabel="Expédiée" itemValue="EXPEDIEE"/>
+                        <f:selectItem itemLabel="Annulée" itemValue="ANNULEE"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="dateFrom" value="Du:"/>
+                    <p:calendar id="dateFrom" value="#{commandeController.dateFrom}" 
+                               pattern="dd/MM/yyyy" navigator="true"/>
+                    
+                    <p:outputLabel for="dateTo" value="Au:"/>
+                    <p:calendar id="dateTo" value="#{commandeController.dateTo}" 
+                               pattern="dd/MM/yyyy" navigator="true"/>
+                    
+                    <p:commandButton value="Filtrer" icon="pi pi-filter" 
+                                   action="#{commandeController.loadCommandes()}" 
+                                   styleClass="p-button-outlined"/>
+                </p:panelGrid>
+            </p:tab>
+        </p:accordionPanel>
+        
+        <p:dataTable var="cmd" value="#{commandeController.commandes}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{commandeController.selectedCommande}" rowKey="#{cmd.id}">
+            
+            <p:column headerText="N° Commande" sortBy="#{cmd.numero}">
+                #{cmd.numero}
+            </p:column>
+            
+            <p:column headerText="Client" sortBy="#{cmd.client.nom}">
+                #{cmd.client.nom} #{cmd.client.prenom}
+            </p:column>
+            
+            <p:column headerText="Date" sortBy="#{cmd.dateCreation}">
+                <h:outputText value="#{cmd.dateCreation}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Montant" sortBy="#{cmd.montantTotal}">
+                <h:outputText value="#{cmd.montantTotal}">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Statut">
+                <p:tag value="#{cmd.statut}" 
+                      severity="#{cmd.statut == 'VALIDEE' ? 'success' : cmd.statut == 'ANNULEE' ? 'danger' : 'warning'}"/>
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:150px">
+                <p:commandButton icon="pi pi-eye" styleClass="p-button-text p-button-info"
+                               action="#{commandeController.viewDetails(cmd)}" update=":commandeDetail"/>
+                
+                <p:commandButton icon="pi pi-check" rendered="#{cmd.statut == 'EN_ATTENTE'}"
+                               styleClass="p-button-text p-button-success"
+                               action="#{commandeController.validerCommande(cmd)}"/>
+                
+                <p:commandButton icon="pi pi-times" rendered="#{cmd.statut == 'EN_ATTENTE'}"
+                               styleClass="p-button-text p-button-danger"
+                               action="#{commandeController.annulerCommande(cmd)}"/>
+                
+                <p:commandButton icon="pi pi-truck" rendered="#{cmd.statut == 'VALIDEE'}"
+                               styleClass="p-button-text p-button-warning"
+                               action="#{commandeController.preparerExpedition(cmd)}" 
+                               update=":expeditionForm"/>
+            </p:column>
+        </p:dataTable>
+        
+        <p:dialog header="Détails Commande" widgetVar="commandeDialog" modal="true" width="800" height="500">
+            <p:outputPanel id="commandeDetail">
+                <ui:fragment rendered="#{not empty commandeController.selectedCommande}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="N° Commande:"/>
+                        <p:outputLabel value="#{commandeController.selectedCommande.numero}" 
+                                     style="font-weight:bold"/>
+                        
+                        <p:outputLabel value="Client:"/>
+                        <p:outputLabel value="#{commandeController.selectedCommande.client.nom} #{commandeController.selectedCommande.client.prenom}"/>
+                        
+                        <p:outputLabel value="Date:"/>
+                        <p:outputLabel value="#{commandeController.selectedCommande.dateCreation}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Statut:"/>
+                        <p:outputLabel>
+                            <p:tag value="#{commandeController.selectedCommande.statut}" 
+                                  severity="#{commandeController.selectedCommande.statut == 'VALIDEE' ? 'success' : commandeController.selectedCommande.statut == 'ANNULEE' ? 'danger' : 'warning'}"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Montant total:"/>
+                        <p:outputLabel value="#{commandeController.selectedCommande.montantTotal}" 
+                                     style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Adresse livraison:"/>
+                        <p:outputLabel value="#{commandeController.selectedCommande.adresseLivraison}"/>
+                    </p:panelGrid>
+                    
+                    <p:dataTable var="ligne" value="#{commandeController.selectedCommande.lignes}" 
+                                style="margin-top:20px">
+                        <p:column headerText="Produit">#{ligne.produit.nom}</p:column>
+                        <p:column headerText="Quantité">#{ligne.quantite}</p:column>
+                        <p:column headerText="Prix unitaire">
+                            <h:outputText value="#{ligne.prixUnitaire}">
+                                <f:convertNumber type="currency" currencySymbol="€"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Total">
+                            <h:outputText value="#{ligne.prixUnitaire * ligne.quantite}">
+                                <f:convertNumber type="currency" currencySymbol="€"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </ui:fragment>
+            </p:outputPanel>
+        </p:dialog>
+        
+        <p:dialog header="Expédition Commande" widgetVar="expeditionDialog" modal="true" width="600">
+            <h:form id="expeditionForm">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel value="N° Commande:"/>
+                    <p:outputLabel value="#{commandeController.commandeToExpedier.numero}" 
+                                 style="font-weight:bold"/>
+                    
+                    <p:outputLabel for="transporteur" value="Transporteur:"/>
+                    <p:selectOneMenu id="transporteur" value="#{commandeController.transporteur}">
+                        <f:selectItems value="#{commandeController.transporteurs}" var="t" 
+                                     itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="numeroSuivi" value="N° suivi:"/>
+                    <p:inputText id="numeroSuivi" value="#{commandeController.numeroSuivi}"/>
+                    
+                    <p:outputLabel for="dateExpedition" value="Date expédition:"/>
+                    <p:calendar id="dateExpedition" value="#{commandeController.dateExpedition}" 
+                               pattern="dd/MM/yyyy" navigator="true"/>
+                </p:panelGrid>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Confirmer" action="#{commandeController.expedierCommande()}" 
+                                   update="@form" oncomplete="if(!args.validationFailed) PF('expeditionDialog').hide()"/>
+                    <p:commandButton value="Annuler" onclick="PF('expeditionDialog').hide()" 
+                                   styleClass="p-button-secondary"/>
+                </f:facet>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

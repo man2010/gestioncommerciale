@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Lignevente" optimistic-lock="none" schema="public" table="lignevente">
+        <id name="id" type="int">
+            <column name="id"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="quantite" type="java.lang.Integer">
+            <column name="quantite"/>
+        </property>
+        <property name="prixu" type="java.lang.Byte">
+            <column name="prixu" precision="0" scale="0"/>
+        </property>
+        <property name="montant" type="java.lang.Byte">
+            <column name="montant" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="ventes" table="vente">
+            <key>
+                <column name="id"/>
+            </key>
+            <one-to-many class="gescom.Vente"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="articles" table="article">
+            <key>
+                <column name="idlignevente"/>
+            </key>
+            <one-to-many class="gescom.Article"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="produits" table="produit">
+            <key>
+                <column name="lig_id2"/>
+            </key>
+            <one-to-many class="gescom.Produit"/>
+        </set>
+    </class>
+</hibernate-mapping>

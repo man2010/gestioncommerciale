@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Configurationboutique" optimistic-lock="none" schema="public" table="configurationboutique">
+        <id name="idconfiguration" type="int">
+            <column name="idconfiguration"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="gestionstockavancee" type="java.lang.Boolean">
+            <column name="gestionstockavancee"/>
+        </property>
+        <property name="multiemplacement" type="java.lang.Boolean">
+            <column name="multiemplacement"/>
+        </property>
+        <property name="tracabilitelot" type="java.lang.Boolean">
+            <column name="tracabilitelot"/>
+        </property>
+        <property name="gestionattributs" type="java.lang.Boolean">
+            <column name="gestionattributs"/>
+        </property>
+        <property name="multidevise" type="java.lang.Boolean">
+            <column name="multidevise"/>
+        </property>
+        <property name="multilangue" type="java.lang.Boolean">
+            <column name="multilangue"/>
+        </property>
+        <property name="locationproduits" type="java.lang.Boolean">
+            <column name="locationproduits"/>
+        </property>
+        <property name="serviceapresvente" type="java.lang.Boolean">
+            <column name="serviceapresvente"/>
+        </property>
+        <property name="programmeaffiliation" type="java.lang.Boolean">
+            <column name="programmeaffiliation"/>
+        </property>
+        <set fetch="select" inverse="false" lazy="true" name="boutiques" table="paramboutique">
+            <key>
+                <column name="idconfiguration" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Boutique">
+                <column name="idboutique" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

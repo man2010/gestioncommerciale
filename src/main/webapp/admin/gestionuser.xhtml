@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Gestion des utilisateurs</title>
+</h:head>
+<h:body>
+    <ui:composition template="pageadmin.xhtml">
+        <ui:define name="content">
+            <h1>Gestion des utilisateurs</h1>
+            
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" 
+                                     action="#{utilisateurBean.prepareCreate}"
+                                     update=":userForm:userDialog" 
+                                     oncomplete="PF('userDialog').show()"/>
+                </p:toolbarGroup>
+                <p:toolbarGroup align="right">
+                    <p:inputText placeholder="Rechercher..." />
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:form id="userForm">
+                <p:dataTable id="usersTable" var="user" value="#{utilisateurBean.utilisateurs}" 
+                             paginator="true" rows="10" selectionMode="single"
+                             selection="#{utilisateurBean.selectedUser}" rowKey="#{user.idutilisateur}">
+                    <p:column headerText="Nom">
+                        <h:outputText value="#{user.prenom} #{user.nom}" />
+                    </p:column>
+                    <p:column headerText="Email">
+                        <h:outputText value="#{user.email}" />
+                    </p:column>
+                    <p:column headerText="Rôle">
+                        <h:outputText value="#{user.role.nomrole}" />
+                    </p:column>
+                    <p:column headerText="Statut">
+                        <p:tag value="#{user.actif ? 'Actif' : 'Inactif'}" 
+                               severity="#{user.actif ? 'success' : 'danger'}" />
+                    </p:column>
+                    <p:column headerText="Actions" style="width:120px">
+                        <p:commandButton icon="pi pi-pencil" title="Modifier" 
+                                         action="#{utilisateurBean.prepareEdit(user)}"
+                                         update=":userForm:userDialog" 
+                                         oncomplete="PF('userDialog').show()"/>
+                        <p:commandButton icon="pi pi-trash" title="Supprimer" 
+                                         action="#{utilisateurBean.deleteUser}"
+                                         update=":userForm:usersTable,:userForm:growl"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dialog id="userDialog" header="Utilisateur" widgetVar="userDialog" 
+                          modal="true" resizable="false" style="width:600px">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel for="prenom" value="Prénom:" />
+                        <p:inputText id="prenom" value="#{utilisateurBean.selectedUser.prenom}" 
+                                    required="true" requiredMessage="Prénom requis"/>
+
+                        <h:outputLabel for="nom" value="Nom:" />
+                        <p:inputText id="nom" value="#{utilisateurBean.selectedUser.nom}" 
+                                    required="true" requiredMessage="Nom requis"/>
+
+                        <h:outputLabel for="email" value="Email:" />
+                        <p:inputText id="email" value="#{utilisateurBean.selectedUser.email}" 
+                                    required="true" requiredMessage="Email requis"/>
+
+                        <h:outputLabel for="role" value="Rôle:" />
+                        <p:selectOneMenu id="role" value="#{utilisateurBean.selectedUser.role}" 
+                                        required="true" requiredMessage="Rôle requis">
+                            <f:selectItems value="#{roleBean.visibleRoles}" 
+                                          var="role" 
+                                          itemLabel="#{role.nomrole}" 
+                                          itemValue="#{role}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="actif" value="Actif:" />
+                        <p:selectBooleanCheckbox id="actif" value="#{utilisateurBean.selectedUser.actif}" />
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" 
+                                        action="#{utilisateurBean.saveUser}"
+                                        update=":userForm:usersTable,:userForm:growl" 
+                                        oncomplete="if(!args.validationFailed) PF('userDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('userDialog').hide()" 
+                                        immediate="true" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+</html>

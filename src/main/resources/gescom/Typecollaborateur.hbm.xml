@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Typecollaborateur" optimistic-lock="none" schema="public" table="typecollaborateur">
+        <id name="idtc" type="int">
+            <column name="idtc"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Collaborateur" fetch="select" name="collaborateur">
+            <column name="idutilisateur"/>
+            <column name="idcollab"/>
+        </many-to-one>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+        <property name="valeur" type="string">
+            <column length="254" name="valeur"/>
+        </property>
+        <property name="description" type="string">
+            <column length="254" name="description"/>
+        </property>
+    </class>
+</hibernate-mapping>

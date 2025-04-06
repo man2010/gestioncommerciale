@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Lots</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <style>
+        .lot-container {
+            margin: 20px;
+        }
+        .lot-detail-label {
+            font-weight: bold;
+            padding-right: 10px;
+        }
+        .expired {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .warning-expiry {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .document-table {
+            margin-top: 15px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Lots</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" url="/produits/new.xhtml" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:submenu label="Stocks" icon="pi pi-cart-plus">
+                    <p:menuitem value="Niveaux de stock" url="/stocks/list.xhtml" icon="pi pi-chart-bar"/>
+                </p:submenu>
+                <p:menuitem value="Lots" url="/lots/list.xhtml" icon="pi pi-box" expanded="true"/>
+                <p:menuitem value="Fournisseurs" url="/fournisseurs/list.xhtml" icon="pi pi-truck"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="layout-content">
+            <p:growl id="growl" showDetail="true" sticky="false"/>
+            
+            <div class="lot-container">
+                <!-- Filtres -->
+                <p:panel header="Filtres" toggleable="true" toggleSpeed="500">
+                    <p:panelGrid columns="3" layout="grid" style="width:100%">
+                        <p:outputLabel for="produit" value="Produit:"/>
+                        <p:selectOneMenu id="produit" value="#{lotController.filterProduit}" style="width:100%">
+                            <f:selectItem itemLabel="Tous les produits" itemValue="#{null}"/>
+                            <f:selectItems value="#{lotController.produits}" var="prod" 
+                                         itemLabel="#{prod.nom}" itemValue="#{prod.id}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:commandButton value="Filtrer" action="#{lotController.applyFilters()}" 
+                                       styleClass="p-button-outlined" update="lotsTable"/>
+                        
+                        <p:outputLabel for="dateFrom" value="Date de début:"/>
+                        <p:calendar id="dateFrom" value="#{lotController.filterDateFrom}" 
+                                   pattern="dd/MM/yyyy" navigator="true" style="width:100%"/>
+                        
+                        <p:outputLabel for="dateTo" value="Date de fin:"/>
+                        <p:calendar id="dateTo" value="#{lotController.filterDateTo}" 
+                                   pattern="dd/MM/yyyy" navigator="true" style="width:100%"/>
+                        
+                        <p:outputLabel for="statut" value="Statut:"/>
+                        <p:selectOneMenu id="statut" value="#{lotController.filterStatut}" style="width:100%">
+                            <f:selectItem itemLabel="Tous" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="Disponible" itemValue="DISPONIBLE"/>
+                            <f:selectItem itemLabel="Réservé" itemValue="RESERVE"/>
+                            <f:selectItem itemLabel="Épuisé" itemValue="EPUISE"/>
+                            <f:selectItem itemLabel="Périmé" itemValue="PERIME"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:panel>
+                
+                <!-- Tableau des lots -->
+                <p:dataTable id="lotsTable" var="lot" value="#{lotController.filteredLots}" 
+                            paginator="true" rows="10" emptyMessage="Aucun lot trouvé"
+                            style="margin-top:20px" rowStyleClass="#{lot.peremptionStatus == 'EXPIRE' ? 'expired' : lot.peremptionStatus == 'ALERTE' ? 'warning-expiry' : ''}">
+                    
+                    <p:column headerText="Numéro" sortBy="#{lot.numero}" filterBy="#{lot.numero}" 
+                             style="width:10%">
+                        <h:outputText value="#{lot.numero}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Produit" sortBy="#{lot.produit.nom}" filterBy="#{lot.produit.nom}" 
+                             style="width:20%">
+                        #{lot.produit.nom}
+                    </p:column>
+                    
+                    <p:column headerText="Quantité" sortBy="#{lot.quantiteRestante}" 
+                             style="width:10%">
+                        #{lot.quantiteRestante}/#{lot.quantiteInitiale}
+                    </p:column>
+                    
+                    <p:column headerText="Réception" sortBy="#{lot.dateReception}" 
+                             style="width:12%">
+                        <h:outputText value="#{lot.dateReception}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Péremption" sortBy="#{lot.datePeremption}" 
+                             style="width:12%">
+                        <h:outputText value="#{lot.datePeremption}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                        <p:badge value="#{lot.peremptionStatus}" 
+                                 severity="#{lot.peremptionStatus == 'VALIDE' ? 'success' : 'danger'}"
+                                 style="margin-left:5px"/>
+                    </p:column>
+                    
+                    <p:column headerText="Statut" sortBy="#{lot.statut}" style="width:12%">
+                        <p:tag value="#{lot.statut}" 
+                              severity="#{lot.statut == 'DISPONIBLE' ? 'success' : lot.statut == 'RESERVE' ? 'info' : lot.statut == 'EPUISE' ? 'warning' : 'danger'}"
+                              style="width:100%"/>
+                    </p:column>
+                    
+                    <p:column headerText="Actions" style="width:12%">
+                        <p:commandButton icon="pi pi-eye" title="Détails" 
+                                       styleClass="p-button-text p-button-info"
+                                       action="#{lotController.viewLot(lot)}" 
+                                       update=":lotDetailForm" 
+                                       oncomplete="PF('lotDialog').show()"/>
+                        
+                        <p:commandButton icon="pi pi-file-pdf" title="Générer PDF" 
+                                       styleClass="p-button-text p-button-help"
+                                       action="#{lotController.generateLotReport(lot)}"/>
+                        
+                        <p:commandButton icon="pi pi-trash" title="Supprimer" 
+                                       styleClass="p-button-text p-button-danger"
+                                       action="#{lotController.deleteLot(lot)}"
+                                       update=":growl :lotsTable"/>
+                    </p:column>
+                </p:dataTable>
+                
+                <!-- Bouton d'ajout -->
+                <p:commandButton value="Ajouter un lot" icon="pi pi-plus" 
+                               styleClass="p-button-success p-mt-2"
+                               action="#{lotController.prepareNewLot()}"
+                               update=":newLotForm" 
+                               oncomplete="PF('newLotDialog').show()"/>
+            </div>
+            
+            <!-- Dialogue de détails -->
+            <p:dialog header="Détails du Lot" widgetVar="lotDialog" modal="true" width="700" 
+                     height="500" resizable="true" closeOnEscape="true">
+                <h:form id="lotDetailForm">
+                    <ui:fragment rendered="#{not empty lotController.selectedLot}">
+                        <p:panelGrid columns="2" layout="grid" style="width:100%">
+                            <p:outputLabel value="Numéro:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.numero}"/>
+                            
+                            <p:outputLabel value="Produit:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.produit.nom}"/>
+                            
+                            <p:outputLabel value="Référence:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.produit.reference}"/>
+                            
+                            <p:outputLabel value="Quantité initiale:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.quantiteInitiale}"/>
+                            
+                            <p:outputLabel value="Quantité restante:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.quantiteRestante}"/>
+                            
+                            <p:outputLabel value="Date réception:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.dateReception}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Date péremption:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.datePeremption}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Fournisseur:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.fournisseur.nom}"/>
+                            
+                            <p:outputLabel value="Commentaire:" styleClass="lot-detail-label"/>
+                            <p:outputLabel value="#{lotController.selectedLot.commentaire}" 
+                                         rendered="#{not empty lotController.selectedLot.commentaire}"/>
+                            <p:outputLabel value="-" rendered="#{empty lotController.selectedLot.commentaire}"/>
+                        </p:panelGrid>
+                        
+                        <p:tabView style="margin-top:20px">
+                            <p:tab title="Mouvements">
+                                <p:dataTable var="mvt" value="#{lotController.selectedLot.mouvements}" 
+                                            emptyMessage="Aucun mouvement enregistré" styleClass="document-table">
+                                    <p:column headerText="Date" sortBy="#{mvt.dateMouvement}">
+                                        <h:outputText value="#{mvt.dateMouvement}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Type" sortBy="#{mvt.type}">
+                                        <p:tag value="#{mvt.type}" 
+                                              severity="#{mvt.type == 'ENTREE' ? 'success' : 'danger'}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Quantité" sortBy="#{mvt.quantite}">
+                                        #{mvt.quantite}
+                                    </p:column>
+                                    
+                                    <p:column headerText="Utilisateur" sortBy="#{mvt.utilisateur.nomComplet}">
+                                        #{mvt.utilisateur.nomComplet}
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            
+                            <p:tab title="Documents">
+                                <p:fileUpload mode="advanced" multiple="true" 
+                                             fileUploadListener="#{lotController.handleFileUpload}"
+                                             update="documentsTable" 
+                                             allowTypes="/(\.|\/)(pdf|docx?|xlsx?|jpg|png)$/"/>
+                                
+                                <p:dataTable id="documentsTable" var="doc" 
+                                            value="#{lotController.selectedLot.documents}" 
+                                            emptyMessage="Aucun document joint"
+                                            styleClass="document-table">
+                                    <p:column headerText="Nom" style="width:40%">
+                                        #{doc.nom}
+                                    </p:column>
+                                    
+                                    <p:column headerText="Type" style="width:20%">
+                                        #{doc.type}
+                                    </p:column>
+                                    
+                                    <p:column headerText="Taille" style="width:20%">
+                                        #{doc.taille} Ko
+                                    </p:column>
+                                    
+                                    <p:column headerText="Actions" style="width:20%">
+                                        <p:commandButton icon="pi pi-download" 
+                                                       styleClass="p-button-text p-button-info"
+                                                       action="#{lotController.downloadDocument(doc)}"/>
+                                        <p:commandButton icon="pi pi-trash" 
+                                                       styleClass="p-button-text p-button-danger"
+                                                       action="#{lotController.deleteDocument(doc)}"
+                                                       update="documentsTable"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </ui:fragment>
+                </h:form>
+            </p:dialog>
+            
+            <!-- Dialogue d'ajout -->
+            <p:dialog header="Nouveau Lot" widgetVar="newLotDialog" modal="true" width="600">
+                <h:form id="newLotForm">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel for="newNumero" value="Numéro:"/>
+                        <p:inputText id="newNumero" value="#{lotController.newLot.numero}" 
+                                    required="true" style="width:100%"/>
+                        
+                        <p:outputLabel for="newProduit" value="Produit:"/>
+                        <p:selectOneMenu id="newProduit" value="#{lotController.newLot.produit}" 
+                                        required="true" style="width:100%">
+                            <f:selectItem itemLabel="Sélectionnez un produit" itemValue="#{null}"/>
+                            <f:selectItems value="#{lotController.produits}" var="prod" 
+                                          itemLabel="#{prod.nom}" itemValue="#{prod}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="newQuantite" value="Quantité:"/>
+                        <p:inputNumber id="newQuantite" value="#{lotController.newLot.quantiteInitiale}" 
+                                      required="true" minValue="1" style="width:100%"/>
+                        
+                        <p:outputLabel for="newDateReception" value="Date réception:"/>
+                        <p:calendar id="newDateReception" value="#{lotController.newLot.dateReception}" 
+                                   required="true" pattern="dd/MM/yyyy" style="width:100%"/>
+                        
+                        <p:outputLabel for="newDatePeremption" value="Date péremption:"/>
+                        <p:calendar id="newDatePeremption" value="#{lotController.newLot.datePeremption}" 
+                                   pattern="dd/MM/yyyy" style="width:100%"/>
+                        
+                        <p:outputLabel for="newFournisseur" value="Fournisseur:"/>
+                        <p:selectOneMenu id="newFournisseur" value="#{lotController.newLot.fournisseur}" 
+                                        required="true" style="width:100%">
+                            <f:selectItem itemLabel="Sélectionnez un fournisseur" itemValue="#{null}"/>
+                            <f:selectItems value="#{lotController.fournisseurs}" var="fourn" 
+                                          itemLabel="#{fourn.nom}" itemValue="#{fourn}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="newCommentaire" value="Commentaire:"/>
+                        <p:inputTextarea id="newCommentaire" value="#{lotController.newLot.commentaire}" 
+                                        rows="3" style="width:100%"/>
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" action="#{lotController.saveNewLot()}" 
+                                       update=":growl :lotsTable" 
+                                       oncomplete="if(!args.validationFailed) PF('newLotDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('newLotDialog').hide()" 
+                                       styleClass="p-button-secondary" immediate="true"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © 2023</p>
+        </div>
+    </div>
+</h:body>
+</html>

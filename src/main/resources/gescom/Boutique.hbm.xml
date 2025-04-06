@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Boutique" optimistic-lock="none" schema="public" table="boutique">
+        <id name="idboutique" type="int">
+            <column name="idboutique"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+        <property name="adresse" type="string">
+            <column length="254" name="adresse"/>
+        </property>
+        <property name="telephone" type="string">
+            <column length="254" name="telephone"/>
+        </property>
+        <property name="email" type="string">
+            <column length="254" name="email"/>
+        </property>
+        <property name="siteweb" type="string">
+            <column length="254" name="siteweb"/>
+        </property>
+        <property name="logo" type="string">
+            <column length="254" name="logo"/>
+        </property>
+        <property name="actif" type="java.lang.Boolean">
+            <column name="actif"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="fermeture" type="date">
+            <column length="13" name="fermeture"/>
+        </property>
+        <property name="deviseutilisee" type="string">
+            <column length="254" name="deviseutilisee"/>
+        </property>
+        <property name="fuseauhoraire" type="string">
+            <column length="254" name="fuseauhoraire"/>
+        </property>
+        <property name="surface" type="java.lang.Byte">
+            <column name="surface" precision="0" scale="0"/>
+        </property>
+        <property name="statut" type="string">
+            <column length="254" name="statut"/>
+        </property>
+        <property name="typeboutique" type="string">
+            <column length="254" name="typeboutique"/>
+        </property>
+        <property name="coordonneesgps" type="string">
+            <column length="254" name="coordonneesgps"/>
+        </property>
+        <property name="capital" type="java.lang.Byte">
+            <column name="capital" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="evenements" table="evenement">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Evenement"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="promotions" table="promotion">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Promotion"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="soldes" table="solde">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Solde"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="stocks" table="stock">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Stock"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="caisses" table="caisse">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Caisse"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="marchandises" table="marchandise">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Marchandise"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="configurationboutiques" table="paramboutique">
+            <key>
+                <column name="idboutique" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Configurationboutique">
+                <column name="idconfiguration" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="horaireboutiques" table="horairesboutique">
+            <key>
+                <column name="idboutique" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Horaireboutique">
+                <column name="idhoraire" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="archiveactiviteboutiques" table="archiveactiviteboutique">
+            <key>
+                <column name="idboutique"/>
+            </key>
+            <one-to-many class="gescom.Archiveactiviteboutique"/>
+        </set>
+    </class>
+</hibernate-mapping>

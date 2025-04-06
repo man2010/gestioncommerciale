@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Avis Clients</h1>
+        
+        <p:panel header="Filtres" toggleable="true" collapsed="true" style="margin-bottom:20px">
+            <p:panelGrid columns="4" layout="grid" style="width:100%">
+                <p:outputLabel for="produit" value="Produit:"/>
+                <p:selectOneMenu id="produit" value="#{avisController.selectedProduct}">
+                    <f:selectItem itemLabel="Tous produits" itemValue="#{null}"/>
+                    <f:selectItems value="#{avisController.products}" var="p" 
+                                 itemLabel="#{p.nom}" itemValue="#{p}"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="note" value="Note:"/>
+                <p:selectOneMenu id="note" value="#{avisController.selectedNote}">
+                    <f:selectItem itemLabel="Toutes notes" itemValue="#{null}"/>
+                    <f:selectItem itemLabel="1 étoile" itemValue="1"/>
+                    <f:selectItem itemLabel="2 étoiles" itemValue="2"/>
+                    <f:selectItem itemLabel="3 étoiles" itemValue="3"/>
+                    <f:selectItem itemLabel="4 étoiles" itemValue="4"/>
+                    <f:selectItem itemLabel="5 étoiles" itemValue="5"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="dateFrom" value="Du:"/>
+                <p:calendar id="dateFrom" value="#{avisController.dateFrom}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="dateTo" value="Au:"/>
+                <p:calendar id="dateTo" value="#{avisController.dateTo}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="statut" value="Statut:"/>
+                <p:selectOneMenu id="statut" value="#{avisController.selectedStatus}">
+                    <f:selectItem itemLabel="Tous statuts" itemValue="#{null}"/>
+                    <f:selectItem itemLabel="Approuvé" itemValue="APPROVED"/>
+                    <f:selectItem itemLabel="En attente" itemValue="PENDING"/>
+                    <f:selectItem itemLabel="Rejeté" itemValue="REJECTED"/>
+                </p:selectOneMenu>
+                
+                <p:commandButton value="Filtrer" icon="pi pi-filter" 
+                               action="#{avisController.loadAvis()}" 
+                               styleClass="p-button-outlined"/>
+            </p:panelGrid>
+        </p:panel>
+        
+        <p:dataTable var="avis" value="#{avisController.avisList}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{avisController.selectedAvis}" rowKey="#{avis.id}">
+            
+            <p:column headerText="ID" sortBy="#{avis.id}" style="width:80px">#{avis.id}</p:column>
+            
+            <p:column headerText="Produit" sortBy="#{avis.produit.nom}">
+                #{avis.produit.nom}
+            </p:column>
+            
+            <p:column headerText="Client" sortBy="#{avis.client.nom}">
+                #{avis.client.nom} #{avis.client.prenom}
+            </p:column>
+            
+            <p:column headerText="Note" sortBy="#{avis.note}">
+                <p:rating value="#{avis.note}" readonly="true" stars="5"/>
+            </p:column>
+            
+            <p:column headerText="Commentaire">
+                <p:outputLabel value="#{avis.commentaire}" rendered="#{not empty avis.commentaire}"/>
+                <p:outputLabel value="(Aucun commentaire)" rendered="#{empty avis.commentaire}" 
+                             style="font-style:italic;color:#999"/>
+            </p:column>
+            
+            <p:column headerText="Date" sortBy="#{avis.dateCreation}">
+                <h:outputText value="#{avis.dateCreation}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Statut">
+                <p:tag value="#{avis.statut}" 
+                      severity="#{avis.statut == 'APPROVED' ? 'success' : avis.statut == 'REJECTED' ? 'danger' : 'warning'}"/>
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:150px">
+                <p:commandButton icon="pi pi-check" title="Approuver" rendered="#{avis.statut != 'APPROVED'}"
+                               styleClass="p-button-text p-button-success"
+                               action="#{avisController.approve(avis)}"/>
+                
+                <p:commandButton icon="pi pi-ban" title="Rejeter" rendered="#{avis.statut != 'REJECTED'}"
+                               styleClass="p-button-text p-button-danger"
+                               action="#{avisController.reject(avis)}"/>
+                
+                <p:commandButton icon="pi pi-trash" title="Supprimer"
+                               styleClass="p-button-text p-button-secondary"
+                               action="#{avisController.delete(avis)}"/>
+            </p:column>
+        </p:dataTable>
+        
+        <p:dialog header="Détails Avis" widgetVar="avisDialog" modal="true" width="600">
+            <p:outputPanel id="avisDetail">
+                <ui:fragment rendered="#{not empty avisController.selectedAvis}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Produit:"/>
+                        <p:outputLabel value="#{avisController.selectedAvis.produit.nom}" 
+                                     style="font-weight:bold"/>
+                        
+                        <p:outputLabel value="Client:"/>
+                        <p:outputLabel value="#{avisController.selectedAvis.client.nom} #{avisController.selectedAvis.client.prenom}"/>
+                        
+                        <p:outputLabel value="Note:"/>
+                        <p:rating value="#{avisController.selectedAvis.note}" readonly="true" stars="5"/>
+                        
+                        <p:outputLabel value="Date:"/>
+                        <p:outputLabel value="#{avisController.selectedAvis.dateCreation}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Statut:"/>
+                        <p:outputLabel>
+                            <p:tag value="#{avisController.selectedAvis.statut}" 
+                                  severity="#{avisController.selectedAvis.statut == 'APPROVED' ? 'success' : avisController.selectedAvis.statut == 'REJECTED' ? 'danger' : 'warning'}"/>
+                        </p:outputLabel>
+                    </p:panelGrid>
+                    
+                    <p:panel header="Commentaire" style="margin-top:20px">
+                        <h:outputText value="#{avisController.selectedAvis.commentaire}" 
+                                    rendered="#{not empty avisController.selectedAvis.commentaire}"/>
+                        <h:outputText value="(Aucun commentaire)" 
+                                    rendered="#{empty avisController.selectedAvis.commentaire}" 
+                                    style="font-style:italic;color:#999"/>
+                    </p:panel>
+                    
+                    <p:panel header="Réponse" style="margin-top:10px" 
+                            rendered="#{not empty avisController.selectedAvis.reponse}">
+                        <h:outputText value="#{avisController.selectedAvis.reponse}"/>
+                        <p:separator/>
+                        <small>Réponse du #{avisController.selectedAvis.dateReponse} par #{avisController.selectedAvis.repondeur}</small>
+                    </p:panel>
+                    
+                    <h:form rendered="#{avisController.selectedAvis.statut == 'APPROVED' and empty avisController.selectedAvis.reponse}">
+                        <p:inputTextarea value="#{avisController.reponse}" style="width:100%;margin-top:20px"
+                                       placeholder="Répondre à l'avis..."/>
+                        <p:commandButton value="Envoyer réponse" style="margin-top:10px"
+                                       action="#{avisController.sendResponse()}"/>
+                    </h:form>
+                </ui:fragment>
+            </p:outputPanel>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Collaborateur" optimistic-lock="none" schema="public" table="collaborateur">
+        <composite-id class="gescom.CollaborateurId" name="id">
+            <key-property name="idcollab" type="int">
+                <column name="idcollab"/>
+            </key-property>
+            <key-property name="idutilisateur" type="int">
+                <column name="idutilisateur"/>
+            </key-property>
+        </composite-id>
+        <many-to-one class="gescom.Utilisateur" fetch="select" insert="false" name="utilisateur" update="false">
+            <column name="idutilisateur" not-null="true"/>
+        </many-to-one>
+        <property name="date" type="date">
+            <column length="13" name="date"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="ventes" table="collabvente">
+            <key>
+                <column name="idemploye" not-null="true"/>
+                <column name="idcollab" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Vente">
+                <column name="idvente" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="approvisionnements" table="approvisionnement">
+            <key>
+                <column name="idutilisateur_collab"/>
+                <column name="idcollab_collab"/>
+            </key>
+            <one-to-many class="gescom.Approvisionnement"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="livraisons" table="livraison">
+            <key>
+                <column name="idutilisateur" not-null="true"/>
+                <column name="idcollab" not-null="true"/>
+            </key>
+            <one-to-many class="gescom.Livraison"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="contrats" table="contrat">
+            <key>
+                <column name="idutilisateur"/>
+                <column name="idcollab"/>
+            </key>
+            <one-to-many class="gescom.Contrat"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="typecollaborateurs" table="typecollaborateur">
+            <key>
+                <column name="idutilisateur"/>
+                <column name="idcollab"/>
+            </key>
+            <one-to-many class="gescom.Typecollaborateur"/>
+        </set>
+    </class>
+</hibernate-mapping>

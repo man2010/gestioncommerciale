@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Salaire" optimistic-lock="none" schema="public" table="salaire">
+        <id name="idsalaire" type="int">
+            <column name="idsalaire"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Varietesalaire" fetch="select" name="varietesalaire">
+            <column name="idvariete"/>
+        </many-to-one>
+        <property name="montant" type="java.lang.Byte">
+            <column name="montant" precision="0" scale="0"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="contrats" table="salairecontrat">
+            <key>
+                <column name="idsalaire" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Contrat">
+                <column name="idcontrat" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

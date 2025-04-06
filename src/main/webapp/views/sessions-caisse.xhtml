@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Sessions de Caisse</h1>
+        
+        <p:panelGrid columns="2" layout="grid" style="width:100%;margin-bottom:20px">
+            <p:outputLabel value="Période:"/>
+            <p:selectOneRadio value="#{sessionCaisseController.period}" layout="grid" columns="3">
+                <f:selectItem itemLabel="Aujourd'hui" itemValue="TODAY"/>
+                <f:selectItem itemLabel="Cette semaine" itemValue="THIS_WEEK"/>
+                <f:selectItem itemLabel="Ce mois" itemValue="THIS_MONTH"/>
+                <f:selectItem itemLabel="Personnalisée" itemValue="CUSTOM"/>
+            </p:selectOneRadio>
+            
+            <p:outputLabel value="Caisse:" rendered="#{sessionCaisseController.period == 'CUSTOM'}"/>
+            <p:selectOneMenu value="#{sessionCaisseController.selectedCaisse}" rendered="#{sessionCaisseController.period == 'CUSTOM'}">
+                <f:selectItem itemLabel="Toutes les caisses" itemValue="#{null}"/>
+                <f:selectItems value="#{sessionCaisseController.caisses}" var="c" 
+                             itemLabel="#{c.libelle}" itemValue="#{c}"/>
+            </p:selectOneMenu>
+            
+            <p:outputLabel value="Du:" rendered="#{sessionCaisseController.period == 'CUSTOM'}"/>
+            <p:calendar value="#{sessionCaisseController.dateFrom}" rendered="#{sessionCaisseController.period == 'CUSTOM'}" 
+                       pattern="dd/MM/yyyy" navigator="true"/>
+            
+            <p:outputLabel value="Au:" rendered="#{sessionCaisseController.period == 'CUSTOM'}"/>
+            <p:calendar value="#{sessionCaisseController.dateTo}" rendered="#{sessionCaisseController.period == 'CUSTOM'}" 
+                       pattern="dd/MM/yyyy" navigator="true"/>
+            
+            <p:commandButton value="Appliquer" action="#{sessionCaisseController.loadSessions()}" 
+                           styleClass="p-button-outlined"/>
+        </p:panelGrid>
+        
+        <p:dataTable var="session" value="#{sessionCaisseController.sessions}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{sessionCaisseController.selectedSession}" rowKey="#{session.id}">
+            
+            <p:column headerText="ID" sortBy="#{session.id}">#{session.id}</p:column>
+            
+            <p:column headerText="Caisse" sortBy="#{session.caisse.libelle}">
+                #{session.caisse.libelle}
+            </p:column>
+            
+            <p:column headerText="Ouverture" sortBy="#{session.dateOuverture}">
+                <h:outputText value="#{session.dateOuverture}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                </h:outputText>
+                <br/>
+                <small>par #{session.operateurOuverture.nom}</small>
+            </p:column>
+            
+            <p:column headerText="Fermeture" sortBy="#{session.dateFermeture}">
+                <h:outputText value="#{session.dateFermeture}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                </h:outputText>
+                <br/>
+                <small>#{not empty session.operateurFermeture ? 'par ' += session.operateurFermeture.nom : 'Non fermée'}</small>
+            </p:column>
+            
+            <p:column headerText="Solde initial">
+                <h:outputText value="#{session.soldeInitial}">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Solde final">
+                <h:outputText value="#{session.soldeFinal}" style="font-weight:bold">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Statut">
+                <p:tag value="#{session.ouverte ? 'OUVERTE' : 'FERMEE'}" 
+                      severity="#{session.ouverte ? 'success' : 'danger'}"/>
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:120px">
+                <p:commandButton icon="pi pi-eye" styleClass="p-button-text p-button-info"
+                               action="#{sessionCaisseController.viewDetails(session)}" 
+                               update=":sessionDetail"/>
+                
+                <p:commandButton icon="pi pi-lock" rendered="#{session.ouverte}"
+                               styleClass="p-button-text p-button-danger"
+                               action="#{sessionCaisseController.prepareClose(session)}" 
+                               update=":closeForm"/>
+            </p:column>
+        </p:dataTable>
+        
+        <p:dialog header="Détails Session" widgetVar="sessionDialog" modal="true" width="800" height="500">
+            <p:outputPanel id="sessionDetail">
+                <ui:fragment rendered="#{not empty sessionCaisseController.selectedSession}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Caisse:"/>
+                        <p:outputLabel value="#{sessionCaisseController.selectedSession.caisse.libelle}" 
+                                     style="font-weight:bold"/>
+                        
+                        <p:outputLabel value="Statut:"/>
+                        <p:outputLabel>
+                            <p:tag value="#{sessionCaisseController.selectedSession.ouverte ? 'OUVERTE' : 'FERMEE'}" 
+                                  severity="#{sessionCaisseController.selectedSession.ouverte ? 'success' : 'danger'}"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Ouverte le:"/>
+                        <p:outputLabel value="#{sessionCaisseController.selectedSession.dateOuverture}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Par:"/>
+                        <p:outputLabel value="#{sessionCaisseController.selectedSession.operateurOuverture.nom}"/>
+                        
+                        <ui:fragment rendered="#{not sessionCaisseController.selectedSession.ouverte}">
+                            <p:outputLabel value="Fermée le:"/>
+                            <p:outputLabel value="#{sessionCaisseController.selectedSession.dateFermeture}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Par:"/>
+                            <p:outputLabel value="#{sessionCaisseController.selectedSession.operateurFermeture.nom}"/>
+                        </ui:fragment>
+                        
+                        <p:outputLabel value="Solde initial:"/>
+                        <p:outputLabel value="#{sessionCaisseController.selectedSession.soldeInitial}">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Solde final:"/>
+                        <p:outputLabel value="#{sessionCaisseController.selectedSession.soldeFinal}" 
+                                     style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                    </p:panelGrid>
+                    
+                    <p:tabView style="margin-top:20px">
+                        <p:tab title="Transactions">
+                            <p:dataTable var="tx" value="#{sessionCaisseController.selectedSession.transactions}" 
+                                        paginator="true" rows="5">
+                                <p:column headerText="ID">#{tx.id}</p:column>
+                                <p:column headerText="Date">
+                                    <h:outputText value="#{tx.dateHeure}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Type">
+                                    <p:tag value="#{tx.type}" 
+                                          severity="#{tx.type == 'VENTE' ? 'success' : 'danger'}"/>
+                                </p:column>
+                                <p:column headerText="Montant">
+                                    <h:outputText value="#{tx.montant}">
+                                        <f:convertNumber type="currency" currencySymbol="€"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        
+                        <p:tab title="Mouvements">
+                            <p:dataTable var="mvt" value="#{sessionCaisseController.selectedSession.mouvements}">
+                                <!-- Détails des mouvements -->
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </ui:fragment>
+            </p:outputPanel>
+        </p:dialog>
+        
+        <p:dialog header="Fermer Session" widgetVar="closeDialog" modal="true" width="500">
+            <h:form id="closeForm">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel value="Caisse:"/>
+                    <p:outputLabel value="#{sessionCaisseController.sessionToClose.caisse.libelle}" 
+                                 style="font-weight:bold"/>
+                    
+                    <p:outputLabel value="Solde théorique:"/>
+                    <p:outputLabel value="#{sessionCaisseController.soldeTheorique}" 
+                                 style="font-weight:bold">
+                        <f:convertNumber type="currency" currencySymbol="€"/>
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Solde réel:"/>
+                    <p:inputNumber value="#{sessionCaisseController.soldeReel}" 
+                                 minValue="0" decimalPlaces="2"/>
+                    
+                    <p:outputLabel for="commentaire" value="Commentaire:"/>
+                    <p:inputTextarea id="commentaire" value="#{sessionCaisseController.commentaire}" 
+                                   rows="3" style="width:100%"/>
+                </p:panelGrid>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Confirmer" action="#{sessionCaisseController.closeSession()}" 
+                                   update="@form" oncomplete="if(!args.validationFailed) PF('closeDialog').hide()"/>
+                    <p:commandButton value="Annuler" onclick="PF('closeDialog').hide()" 
+                                   styleClass="p-button-secondary"/>
+                </f:facet>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

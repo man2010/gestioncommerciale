@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Sessioncaisse" optimistic-lock="none" schema="public" table="sessioncaisse">
+        <id name="idsession" type="int">
+            <column name="idsession"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Caisse" fetch="select" name="caisse">
+            <column name="idcaisse"/>
+            <column length="254" name="numeroserie"/>
+        </many-to-one>
+        <property name="date" type="date">
+            <column length="13" name="date"/>
+        </property>
+        <property name="heure" type="time">
+            <column length="15" name="heure"/>
+        </property>
+        <property name="montant" type="java.lang.Byte">
+            <column name="montant" precision="0" scale="0"/>
+        </property>
+        <property name="type" type="string">
+            <column length="254" name="type"/>
+        </property>
+    </class>
+</hibernate-mapping>

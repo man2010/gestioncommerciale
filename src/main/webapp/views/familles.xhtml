@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Familles</title>
+    <style>
+        .layout-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .layout-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .layout-header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .layout-menu {
+            background-color: #34495e;
+            padding: 0 20px;
+        }
+        .layout-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .layout-footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+        .famille-container {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .form-grid {
+            width: 100%;
+        }
+        .p-button-success {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+        .p-button-secondary {
+            background-color: #7f8c8d;
+            border-color: #7f8c8d;
+        }
+        .p-button-danger {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Familles</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" url="/produits/new.xhtml" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:submenu label="Catégories" icon="pi pi-sitemap">
+                    <p:menuitem value="Arborescence" url="/categories/tree.xhtml" icon="pi pi-table"/>
+                </p:submenu>
+                <p:menuitem value="Familles" url="/familles/list.xhtml" icon="pi pi-tags" expanded="true"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal avec formulaire principal -->
+        <div class="layout-content">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" sticky="false"/>
+                
+                <div class="famille-container">
+                    <p:dataTable id="famillesTable" var="fam" value="#{familleBean.familles}" 
+                                paginator="true" rows="10" editable="true"
+                                editMode="row" rowKey="#{fam.id}"
+                                emptyMessage="Aucune famille trouvée"
+                                style="margin-bottom: 20px;">
+                        
+                        <p:column headerText="ID" sortBy="#{fam.id}" style="width:80px">
+                            #{fam.id}
+                        </p:column>
+                        
+                        <p:column headerText="Nom" sortBy="#{fam.nom}" filterBy="#{fam.nom}">
+                            <p:cellEditor>
+                                <f:facet name="output">#{fam.nom}</f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{fam.nom}" style="width:100%" required="true"
+                                               requiredMessage="Le nom est obligatoire"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="Parent" sortBy="#{fam.parent.nom}">
+                            #{fam.parent != null ? fam.parent.nom : '—'}
+                        </p:column>
+                        
+                        <p:column headerText="Actions" style="width:150px" class="action-buttons">
+                            <p:rowEditor/>
+                            <p:commandButton icon="pi pi-trash" styleClass="p-button-text p-button-danger"
+                                           action="#{familleBean.supprimerFamille(fam)}"
+                                           update=":mainForm:messages :mainForm:famillesTable"
+                                           process="@this"
+                                           onclick="return confirm('Supprimer cette famille ?')"/>
+                        </p:column>
+                    </p:dataTable>
+                    
+                    <p:commandButton value="Ajouter une famille" icon="pi pi-plus" 
+                                    styleClass="p-button-success"
+                                    onclick="PF('addDialog').show()"
+                                    update=":addForm"/>
+                </div>
+            </h:form>
+            
+            <!-- Dialogue pour ajouter une nouvelle famille -->
+            <p:dialog header="Nouvelle Famille" widgetVar="addDialog" modal="true" width="500"
+                     resizable="false" draggable="false">
+                <h:form id="addForm">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel for="newNom" value="Nom:"/>
+                        <p:inputText id="newNom" value="#{familleBean.newFamille.nom}" 
+                                    required="true" style="width:100%"
+                                    requiredMessage="Le nom est obligatoire"/>
+                                       
+                        <p:outputLabel for="newParent" value="Famille parente:" 
+                                      rendered="#{not empty familleBean.parentsDisponibles}"/>
+                        <p:selectOneMenu id="newParent" value="#{familleBean.newFamille.parent}" 
+                                        style="width:100%"
+                                        rendered="#{not empty familleBean.parentsDisponibles}">
+                            <f:selectItem itemLabel="-- Aucun parent --" itemValue="#{null}"/>
+                            <f:selectItems value="#{familleBean.parentsDisponibles}" var="parent" 
+                                         itemLabel="#{parent.nom}" itemValue="#{parent}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" action="#{familleBean.ajouterFamille}"
+                                       update=":mainForm:messages :mainForm:famillesTable" 
+                                       oncomplete="if(!args.validationFailed) PF('addDialog').hide()"
+                                       process="@form"/>
+                        <p:commandButton value="Annuler" onclick="PF('addDialog').hide()" 
+                                       styleClass="p-button-secondary" immediate="true"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © #{facesContext.externalContext.sessionMap.currentYear}</p>
+        </div>
+    </div>
+    
+    <h:outputScript>
+        // Initialisation de l'année courante
+        var currentYear = new Date().getFullYear();
+        document.querySelector('.layout-footer p').textContent = 
+            'Application de gestion - © ' + currentYear;
+    </h:outputScript>
+</h:body>
+</html>

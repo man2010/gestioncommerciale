@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Categorievariete" optimistic-lock="none" schema="public" table="categorievariete">
+        <id name="idcatvariete" type="int">
+            <column name="idcatvariete"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Piece" fetch="select" name="piece">
+            <column name="idpiece"/>
+        </many-to-one>
+        <property name="designation" type="string">
+            <column length="254" name="designation"/>
+        </property>
+        <property name="code" type="string">
+            <column length="254" name="code"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="datecretaion" type="date">
+            <column length="13" name="datecretaion"/>
+        </property>
+        <property name="nombreelements" type="java.lang.Integer">
+            <column name="nombreelements"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="varietes" table="variete">
+            <key>
+                <column name="idcatvariete" not-null="true"/>
+            </key>
+            <one-to-many class="gescom.Variete"/>
+        </set>
+    </class>
+</hibernate-mapping>

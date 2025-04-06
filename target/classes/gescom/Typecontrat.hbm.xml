@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Typecontrat" optimistic-lock="none" schema="public" table="typecontrat">
+        <id name="idtypecontrat" type="int">
+            <column name="idtypecontrat"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+        <property name="valeur" type="string">
+            <column length="254" name="valeur"/>
+        </property>
+        <property name="description" type="string">
+            <column length="254" name="description"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="contrats" table="contrat">
+            <key>
+                <column name="idtypecontrat"/>
+            </key>
+            <one-to-many class="gescom.Contrat"/>
+        </set>
+    </class>
+</hibernate-mapping>

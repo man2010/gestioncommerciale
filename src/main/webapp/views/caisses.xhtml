@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestion des Caisses</h1>
+        
+        <p:toolbar style="margin-bottom:20px">
+            <p:toolbarGroup>
+                <p:commandButton value="Ajouter" icon="pi pi-plus" styleClass="p-button-success"
+                               action="#{caisseController.initNewCaisse()}" update=":caisseForm"/>
+            </p:toolbarGroup>
+            
+            <p:toolbarGroup align="right">
+                <p:commandButton value="Exporter" icon="pi pi-file-excel" styleClass="p-button-outlined"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <p:dataTable var="caisse" value="#{caisseController.caisses}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{caisseController.selectedCaisse}" rowKey="#{caisse.id}">
+            
+            <p:column headerText="ID" sortBy="#{caisse.id}">#{caisse.id}</p:column>
+            
+            <p:column headerText="Libellé" sortBy="#{caisse.libelle}">
+                #{caisse.libelle}
+            </p:column>
+            
+            <p:column headerText="Emplacement" sortBy="#{caisse.emplacement}">
+                #{caisse.emplacement}
+            </p:column>
+            
+            <p:column headerText="Statut">
+                <p:tag value="#{caisse.statut}" 
+                      severity="#{caisse.statut == 'ACTIVE' ? 'success' : 'danger'}"/>
+            </p:column>
+            
+            <p:column headerText="Solde actuel">
+                <h:outputText value="#{caisse.soldeActuel}">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:150px">
+                <p:commandButton icon="pi pi-pencil" styleClass="p-button-text p-button-warning"
+                               action="#{caisseController.prepareEditCaisse(caisse)}" update=":caisseForm"/>
+                
+                <p:commandButton icon="pi pi-power-off" title="Activer/Désactiver"
+                               styleClass="p-button-text #{caisse.statut == 'ACTIVE' ? 'p-button-danger' : 'p-button-success'}"
+                               action="#{caisseController.toggleStatus(caisse)}"/>
+                
+                <p:commandButton icon="pi pi-history" title="Historique"
+                               styleClass="p-button-text p-button-info"
+                               action="#{caisseController.viewHistory(caisse)}" update=":historyPanel"/>
+            </p:column>
+        </p:dataTable>
+
+        <p:dialog header="Caisse" widgetVar="caisseDialog" modal="true" width="500">
+            <h:form id="caisseForm">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel for="libelle" value="Libellé:"/>
+                    <p:inputText id="libelle" value="#{caisseController.currentCaisse.libelle}" required="true"/>
+                    
+                    <p:outputLabel for="emplacement" value="Emplacement:"/>
+                    <p:inputText id="emplacement" value="#{caisseController.currentCaisse.emplacement}"/>
+                    
+                    <p:outputLabel for="soldeInitial" value="Solde initial:"/>
+                    <p:inputNumber id="soldeInitial" value="#{caisseController.currentCaisse.soldeInitial}" 
+                                  minValue="0" decimalPlaces="2"/>
+                    
+                    <p:outputLabel for="statut" value="Statut:" rendered="#{not empty caisseController.currentCaisse.id}"/>
+                    <p:selectBooleanCheckbox id="statut" value="#{caisseController.currentCaisse.active}" 
+                                           rendered="#{not empty caisseController.currentCaisse.id}"/>
+                </p:panelGrid>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Enregistrer" action="#{caisseController.saveCaisse()}" 
+                                   update="@form" oncomplete="if(!args.validationFailed) PF('caisseDialog').hide()"/>
+                    <p:commandButton value="Annuler" onclick="PF('caisseDialog').hide()" 
+                                   styleClass="p-button-secondary"/>
+                </f:facet>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog header="Historique de la caisse" widgetVar="historyDialog" modal="true" width="800" height="500">
+            <p:outputPanel id="historyPanel">
+                <p:dataTable var="mvt" value="#{caisseController.historique}" paginator="true" rows="10">
+                    <p:column headerText="Date">
+                        <h:outputText value="#{mvt.date}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Type">
+                        #{mvt.type}
+                    </p:column>
+                    
+                    <p:column headerText="Montant">
+                        <h:outputText value="#{mvt.montant}">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Description">
+                        #{mvt.description}
+                    </p:column>
+                    
+                    <p:column headerText="Responsable">
+                        #{mvt.responsable}
+                    </p:column>
+                </p:dataTable>
+            </p:outputPanel>
+        </p:dialog>
+    </ui:define>
+</ui:composition>s

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Variete" optimistic-lock="none" schema="public" table="variete">
+        <composite-id class="gescom.VarieteId" name="id">
+            <key-property name="idcatvariete" type="int">
+                <column name="idcatvariete"/>
+            </key-property>
+            <key-property name="idvariete" type="int">
+                <column name="idvariete"/>
+            </key-property>
+        </composite-id>
+        <many-to-one class="gescom.Categorievariete" fetch="select" insert="false" name="categorievariete" update="false">
+            <column name="idcatvariete" not-null="true"/>
+        </many-to-one>
+        <property name="designation" type="string">
+            <column length="254" name="designation"/>
+        </property>
+        <property name="code" type="string">
+            <column length="254" name="code"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+    </class>
+</hibernate-mapping>

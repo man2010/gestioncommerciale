@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Paramètres du Système</h1>
+        
+        <p:tabView>
+            <p:tab title="Général">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel for="nomBoutique" value="Nom de la boutique:"/>
+                    <p:inputText id="nomBoutique" value="#{parametreController.settings.nomBoutique}" 
+                                style="width:100%"/>
+                    
+                    <p:outputLabel for="emailContact" value="Email de contact:"/>
+                    <p:inputText id="emailContact" value="#{parametreController.settings.emailContact}" 
+                                style="width:100%"/>
+                    
+                    <p:outputLabel for="telephone" value="Téléphone:"/>
+                    <p:inputText id="telephone" value="#{parametreController.settings.telephone}" 
+                                style="width:100%"/>
+                    
+                    <p:outputLabel for="adresse" value="Adresse:"/>
+                    <p:inputTextarea id="adresse" value="#{parametreController.settings.adresse}" 
+                                    rows="3" style="width:100%"/>
+                    
+                    <p:outputLabel for="tva" value="Taux TVA (%):"/>
+                    <p:inputNumber id="tva" value="#{parametreController.settings.tauxTVA}" 
+                                  minValue="0" maxValue="30" decimalPlaces="2"/>
+                    
+                    <p:outputLabel for="devise" value="Devise:"/>
+                    <p:selectOneMenu id="devise" value="#{parametreController.settings.devise}">
+                        <f:selectItem itemLabel="Euro (€)" itemValue="EUR"/>
+                        <f:selectItem itemLabel="Dollar ($)" itemValue="USD"/>
+                        <f:selectItem itemLabel="Livre (£)" itemValue="GBP"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </p:tab>
+            
+            <p:tab title="Ventes">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel for="modePaiement" value="Modes de paiement acceptés:"/>
+                    <p:selectManyCheckbox id="modePaiement" value="#{parametreController.settings.modesPaiement}">
+                        <f:selectItem itemLabel="Espèces" itemValue="ESPECES"/>
+                        <f:selectItem itemLabel="Carte bancaire" itemValue="CB"/>
+                        <f:selectItem itemLabel="Chèque" itemValue="CHEQUE"/>
+                        <f:selectItem itemLabel="Virement" itemValue="VIREMENT"/>
+                    </p:selectManyCheckbox>
+                    
+                    <p:outputLabel for="ticketImprime" value="Impression automatique des tickets:"/>
+                    <p:selectBooleanCheckbox id="ticketImprime" value="#{parametreController.settings.impressionAutoTicket}"/>
+                    
+                    <p:outputLabel for="fondCaisse" value="Fond de caisse initial:"/>
+                    <p:inputNumber id="fondCaisse" value="#{parametreController.settings.fondCaisseInitial}" 
+                                  minValue="0" decimalPlaces="2"/>
+                    
+                    <p:outputLabel for="seuilAlerteStock" value="Seuil d'alerte stock:"/>
+                    <p:inputNumber id="seuilAlerteStock" value="#{parametreController.settings.seuilAlerteStock}" 
+                                  minValue="1" integerOnly="true"/>
+                </p:panelGrid>
+            </p:tab>
+            
+            <p:tab title="Sécurité">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel for="sessionTimeout" value="Timeout session (minutes):"/>
+                    <p:inputNumber id="sessionTimeout" value="#{parametreController.settings.sessionTimeout}" 
+                                  minValue="1" integerOnly="true"/>
+                    
+                    <p:outputLabel for="complexiteMdp" value="Complexité mot de passe:"/>
+                    <p:selectOneMenu id="complexiteMdp" value="#{parametreController.settings.complexiteMotDePasse}">
+                        <f:selectItem itemLabel="Faible" itemValue="FAIBLE"/>
+                        <f:selectItem itemLabel="Moyenne" itemValue="MOYENNE"/>
+                        <f:selectItem itemLabel="Forte" itemValue="FORTE"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="nbTentatives" value="Nombre tentatives avant blocage:"/>
+                    <p:inputNumber id="nbTentatives" value="#{parametreController.settings.nbTentativesConnexion}" 
+                                  minValue="1" maxValue="10" integerOnly="true"/>
+                </p:panelGrid>
+            </p:tab>
+            
+            <p:tab title="Sauvegarde">
+                <p:panelGrid columns="2" layout="grid" style="width:100%">
+                    <p:outputLabel for="freqSauvegarde" value="Fréquence sauvegarde automatique:"/>
+                    <p:selectOneMenu id="freqSauvegarde" value="#{parametreController.settings.frequenceSauvegarde}">
+                        <f:selectItem itemLabel="Quotidienne" itemValue="DAILY"/>
+                        <f:selectItem itemLabel="Hebdomadaire" itemValue="WEEKLY"/>
+                        <f:selectItem itemLabel="Mensuelle" itemValue="MONTHLY"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="heureSauvegarde" value="Heure de sauvegarde:"/>
+                    <p:selectOneMenu id="heureSauvegarde" value="#{parametreController.settings.heureSauvegarde}">
+                        <f:selectItems value="#{parametreController.heuresDisponibles}"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="nbSauvegardes" value="Nombre de sauvegardes à conserver:"/>
+                    <p:inputNumber id="nbSauvegardes" value="#{parametreController.settings.nbSauvegardesConserver}" 
+                                  minValue="1" maxValue="30" integerOnly="true"/>
+                </p:panelGrid>
+                
+                <p:separator/>
+                
+                <p:commandButton value="Sauvegarder maintenant" icon="pi pi-save" 
+                                 action="#{parametreController.sauvegarderMaintenant()}" 
+                                 styleClass="p-button-success"/>
+                
+                <p:commandButton value="Restaurer" icon="pi pi-replay" 
+                                 onclick="PF('restoreDialog').show()" 
+                                 styleClass="p-button-warning" style="margin-left:10px"/>
+            </p:tab>
+        </p:tabView>
+        
+        <p:separator/>
+        
+        <p:commandButton value="Enregistrer tous les paramètres" icon="pi pi-check" 
+                         action="#{parametreController.saveAllSettings()}" 
+                         styleClass="p-button-primary" style="margin-top:20px"/>
+        
+        <p:dialog header="Restaurer une sauvegarde" widgetVar="restoreDialog" modal="true" width="600">
+            <p:dataTable var="backup" value="#{parametreController.sauvegardes}" 
+                        selection="#{parametreController.selectedBackup}" 
+                        rowKey="#{backup.nomFichier}" selectionMode="single">
+                
+                <p:column headerText="Nom fichier">#{backup.nomFichier}</p:column>
+                <p:column headerText="Date">#{backup.dateCreation}</p:column>
+                <p:column headerText="Taille">#{backup.taille}</p:column>
+            </p:dataTable>
+            
+            <f:facet name="footer">
+                <p:commandButton value="Restaurer" action="#{parametreController.restaurerSauvegarde()}" 
+                                 disabled="#{empty parametreController.selectedBackup}" 
+                                 styleClass="p-button-warning"/>
+                <p:commandButton value="Annuler" onclick="PF('restoreDialog').hide()" 
+                                 styleClass="p-button-secondary"/>
+            </f:facet>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Lot" optimistic-lock="none" schema="public" table="lot">
+        <id name="idlot" type="int">
+            <column name="idlot"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Stock" fetch="select" name="stock">
+            <column name="idstock"/>
+        </many-to-one>
+        <many-to-one class="gescom.Marchandise" fetch="select" name="marchandise">
+            <column name="idmarchandise"/>
+        </many-to-one>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <property name="description" type="string">
+            <column name="description"/>
+        </property>
+        <property name="qtinitiale" type="java.lang.Integer">
+            <column name="qtinitiale"/>
+        </property>
+        <property name="qtactuelle" type="java.lang.Integer">
+            <column name="qtactuelle"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="pieces" table="piece">
+            <key>
+                <column name="idlot"/>
+            </key>
+            <one-to-many class="gescom.Piece"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Bilans Financiers</h1>
+        
+        <p:panel header="Période" toggleable="true" collapsed="true" style="margin-bottom:20px">
+            <p:panelGrid columns="3" layout="grid" style="width:100%">
+                <p:outputLabel for="typeBilan" value="Type bilan:"/>
+                <p:selectOneMenu id="typeBilan" value="#{bilanController.typeBilan}">
+                    <f:selectItem itemLabel="Mensuel" itemValue="MONTHLY"/>
+                    <f:selectItem itemLabel="Trimestriel" itemValue="QUARTERLY"/>
+                    <f:selectItem itemLabel="Annuel" itemValue="YEARLY"/>
+                    <f:selectItem itemLabel="Personnalisé" itemValue="CUSTOM"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="annee" value="Année:" rendered="#{bilanController.typeBilan != 'CUSTOM'}"/>
+                <p:selectOneMenu id="annee" value="#{bilanController.annee}" 
+                                rendered="#{bilanController.typeBilan != 'CUSTOM'}">
+                    <f:selectItems value="#{bilanController.anneesDisponibles}"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="mois" value="Mois:" rendered="#{bilanController.typeBilan == 'MONTHLY'}"/>
+                <p:selectOneMenu id="mois" value="#{bilanController.mois}" 
+                                rendered="#{bilanController.typeBilan == 'MONTHLY'}">
+                    <f:selectItems value="#{bilanController.moisDisponibles}"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="trimestre" value="Trimestre:" rendered="#{bilanController.typeBilan == 'QUARTERLY'}"/>
+                <p:selectOneMenu id="trimestre" value="#{bilanController.trimestre}" 
+                                rendered="#{bilanController.typeBilan == 'QUARTERLY'}">
+                    <f:selectItem itemLabel="T1" itemValue="1"/>
+                    <f:selectItem itemLabel="T2" itemValue="2"/>
+                    <f:selectItem itemLabel="T3" itemValue="3"/>
+                    <f:selectItem itemLabel="T4" itemValue="4"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="dateFrom" value="Du:" rendered="#{bilanController.typeBilan == 'CUSTOM'}"/>
+                <p:calendar id="dateFrom" value="#{bilanController.dateFrom}" 
+                           rendered="#{bilanController.typeBilan == 'CUSTOM'}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="dateTo" value="Au:" rendered="#{bilanController.typeBilan == 'CUSTOM'}"/>
+                <p:calendar id="dateTo" value="#{bilanController.dateTo}" 
+                           rendered="#{bilanController.typeBilan == 'CUSTOM'}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:commandButton value="Générer" icon="pi pi-refresh"
+                               action="#{bilanController.genererBilan()}" 
+                               styleClass="p-button-outlined"/>
+            </p:panelGrid>
+        </p:panel>
+        
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6">
+                <p:panel header="Résumé Financier">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Chiffre d'affaires:"/>
+                        <p:outputLabel value="#{bilanController.bilan.chiffreAffaires}" style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Coûts:"/>
+                        <p:outputLabel value="#{bilanController.bilan.couts}" style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Marge brute:"/>
+                        <p:outputLabel value="#{bilanController.bilan.margeBrute}" style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Taux marge:"/>
+                        <p:outputLabel value="#{bilanController.bilan.tauxMarge}" style="font-weight:bold">
+                            <f:convertNumber type="percent" maxFractionDigits="2"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Frais fixes:"/>
+                        <p:outputLabel value="#{bilanController.bilan.fraisFixes}" style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Résultat net:"/>
+                        <p:outputLabel value="#{bilanController.bilan.resultatNet}" 
+                                     style="font-weight:bold;color:#{bilanController.bilan.resultatNet >= 0 ? 'green' : 'red'}">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                    </p:panelGrid>
+                </p:panel>
+            </div>
+            
+            <div class="ui-g-12 ui-md-6">
+                <p:panel header="Évolution">
+                    <p:chart type="line" model="#{bilanController.evolutionModel}" style="height:300px"/>
+                </p:panel>
+            </div>
+        </div>
+        
+        <p:tabView style="margin-top:20px">
+            <p:tab title="Ventes par catégorie">
+                <p:chart type="bar" model="#{bilanController.ventesCategorieModel}" style="height:300px"/>
+            </p:tab>
+            
+            <p:tab title="Détails des coûts">
+                <p:chart type="doughnut" model="#{bilanController.coutsModel}" style="height:300px"/>
+            </p:tab>
+            
+            <p:tab title="Tableau complet">
+                <p:dataTable var="item" value="#{bilanController.bilan.details}" 
+                            scrollable="true" scrollHeight="300px">
+                    <p:column headerText="Libellé">#{item.libelle}</p:column>
+                    <p:column headerText="Montant">
+                        <h:outputText value="#{item.montant}">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="% du CA">
+                        <h:outputText value="#{item.percentage}">
+                            <f:convertNumber type="percent" maxFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+        </p:tabView>
+        
+        <p:commandButton value="Exporter PDF" icon="pi pi-file-pdf" styleClass="p-button-danger"
+                       action="#{bilanController.exportPDF()}" style="margin-top:20px"/>
+        <p:commandButton value="Exporter Excel" icon="pi pi-file-excel" styleClass="p-button-success"
+                       action="#{bilanController.exportExcel()}" style="margin-top:20px;margin-left:10px"/>
+    </ui:define>
+</ui:composition>

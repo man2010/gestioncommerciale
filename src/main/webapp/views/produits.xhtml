@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Produits</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <style>
+             body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout-header {
+    background-color: #2196F3;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.layout-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.layout-menu {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dddddd;
+}
+
+.layout-content {
+    flex: 1;
+    padding: 1rem;
+    background-color: #ffffff;
+    margin: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.layout-footer {
+    background-color: #333333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+/* Styles pour les boutons d'action */
+.p-button-text.p-button-warning {
+    color: #ff9800;
+}
+
+.p-button-text.p-button-danger {
+    color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .layout-content {
+        margin: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .p-dialog {
+        width: 95% !important;
+    }
+}
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Produits</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" onclick="PF('productDialog').show()" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:menuitem value="Familles" url="/familles/list.xhtml" icon="pi pi-tags"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="layout-content">
+            <p:growl id="growl" showDetail="true" sticky="false"/>
+            
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" styleClass="p-button-success"
+                                   action="#{produitController.prepareNewProduct()}" update=":productForm"/>
+                </p:toolbarGroup>
+                
+                <p:toolbarGroup align="right">
+                    <p:selectCheckboxMenu label="Colonnes" value="#{produitController.selectedColumns}" 
+                                        panelStyle="width:150px">
+                        <f:selectItems value="#{produitController.columns}" var="col" 
+                                     itemLabel="#{col.header}" itemValue="#{col}"/>
+                    </p:selectCheckboxMenu>
+                    <p:commandButton icon="pi pi-filter" title="Filtrer" onclick="PF('filterDialog').show()"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable id="productsTable" var="prod" value="#{produitController.products}" 
+                        paginator="true" rows="10" selection="#{produitController.selectedProduct}"
+                        filteredValue="#{produitController.filteredProducts}" rowKey="#{prod.id}"
+                        emptyMessage="Aucun produit trouvé">
+                
+                <p:column selectionMode="single" style="width:3%"/>
+                
+                <p:column headerText="ID" sortBy="#{prod.id}" filterBy="#{prod.id}" 
+                         visible="#{produitController.columnVisible('ID')}">
+                    #{prod.id}
+                </p:column>
+                
+                <p:column headerText="Nom" sortBy="#{prod.nom}" filterBy="#{prod.nom}" 
+                         visible="#{produitController.columnVisible('Nom')}">
+                    #{prod.nom}
+                </p:column>
+                
+                <p:column headerText="Description" sortBy="#{prod.description}" 
+                         visible="#{produitController.columnVisible('Description')}">
+                    #{prod.description}
+                </p:column>
+                
+                <p:column headerText="Prix" sortBy="#{prod.prix}" visible="#{produitController.columnVisible('Prix')}">
+                    <h:outputText value="#{prod.prix}">
+                        <f:convertNumber type="currency" currencySymbol="€"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Stock" sortBy="#{prod.stock}" visible="#{produitController.columnVisible('Stock')}">
+                    #{prod.stock}
+                </p:column>
+                
+                <p:column headerText="Famille" sortBy="#{prod.famille.nom}" 
+                         visible="#{produitController.columnVisible('Famille')}">
+                    #{prod.famille.nom}
+                </p:column>
+                
+                <p:column headerText="Actions" style="width:120px">
+                    <p:commandButton icon="pi pi-pencil" styleClass="p-button-text p-button-warning"
+                                   action="#{produitController.prepareEditProduct(prod)}" update=":productForm"/>
+                    <p:commandButton icon="pi pi-trash" styleClass="p-button-text p-button-danger"
+                                   action="#{produitController.deleteProduct(prod)}" 
+                                   update=":productsTable :growl"/>
+                </p:column>
+            </p:dataTable>
+
+            <!-- Dialogue d'édition/ajout -->
+            <p:dialog header="Produit" widgetVar="productDialog" modal="true" resizable="false" width="600">
+                <h:form id="productForm">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel for="nom" value="Nom:"/>
+                        <p:inputText id="nom" value="#{produitController.currentProduct.nom}" required="true"
+                                     requiredMessage="Le nom est obligatoire"/>
+
+                        <p:outputLabel for="description" value="Description:"/>
+                        <p:inputTextarea id="description" value="#{produitController.currentProduct.description}"
+                                        rows="3" cols="30"/>
+
+                        <p:outputLabel for="prix" value="Prix:"/>
+                        <p:inputNumber id="prix" value="#{produitController.currentProduct.prix}" 
+                                      required="true" minValue="0.01" decimalPlaces="2"
+                                      requiredMessage="Le prix est obligatoire"/>
+
+                        <p:outputLabel for="stock" value="Stock:"/>
+                        <p:inputNumber id="stock" value="#{produitController.currentProduct.stock}" 
+                                      required="true" integerOnly="true" minValue="0"
+                                      requiredMessage="Le stock est obligatoire"/>
+
+                        <p:outputLabel for="famille" value="Famille:"/>
+                        <p:selectOneMenu id="famille" value="#{produitController.currentProduct.famille}" 
+                                       required="true" requiredMessage="La famille est obligatoire">
+                            <f:selectItem itemLabel="Sélectionnez une famille" itemValue="#{null}"/>
+                            <f:selectItems value="#{produitController.familles}" var="fam" 
+                                         itemLabel="#{fam.nom}" itemValue="#{fam}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" action="#{produitController.saveProduct()}" 
+                                       update=":productsTable :growl" oncomplete="if(!args.validationFailed) PF('productDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('productDialog').hide()" 
+                                       styleClass="p-button-secondary" immediate="true"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+
+            <!-- Dialogue de filtre -->
+            <p:dialog header="Filtres avancés" widgetVar="filterDialog" modal="true" width="500">
+                <h:form>
+                    <p:panelGrid columns="2" layout="grid">
+                        <p:outputLabel for="filterNom" value="Nom contient:"/>
+                        <p:inputText id="filterNom" value="#{produitController.filterNom}"/>
+
+                        <p:outputLabel for="filterPrixMin" value="Prix minimum:"/>
+                        <p:inputNumber id="filterPrixMin" value="#{produitController.filterPrixMin}" decimalPlaces="2"/>
+
+                        <p:outputLabel for="filterPrixMax" value="Prix maximum:"/>
+                        <p:inputNumber id="filterPrixMax" value="#{produitController.filterPrixMax}" decimalPlaces="2"/>
+
+                        <p:outputLabel for="filterFamille" value="Famille:"/>
+                        <p:selectOneMenu id="filterFamille" value="#{produitController.filterFamille}">
+                            <f:selectItem itemLabel="Toutes" itemValue="#{null}"/>
+                            <f:selectItems value="#{produitController.familles}" var="fam" 
+                                         itemLabel="#{fam.nom}" itemValue="#{fam}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Appliquer" action="#{produitController.applyFilters()}" 
+                                       update=":productsTable" oncomplete="PF('filterDialog').hide()"/>
+                        <p:commandButton value="Réinitialiser" action="#{produitController.resetFilters()}" 
+                                       update=":productsTable" styleClass="p-button-secondary"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © 2023</p>
+        </div>
+    </div>
+</h:body>
+</html>

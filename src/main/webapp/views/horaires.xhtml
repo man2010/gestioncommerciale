@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Horaires d'Ouverture</h1>
+        
+        <p:panel header="Horaires standards" style="margin-bottom:20px">
+            <p:dataTable var="horaire" value="#{horaireController.horaires}" 
+                        editable="true" editMode="cell">
+                
+                <p:column headerText="Jour" style="width:150px">
+                    #{horaire.jour}
+                </p:column>
+                
+                <p:column headerText="Ouvert">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <p:selectBooleanCheckbox value="#{horaire.ouvert}" disabled="true"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectBooleanCheckbox value="#{horaire.ouvert}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Heure d'ouverture">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{horaire.heureOuverture}" rendered="#{horaire.ouvert}">
+                                <f:convertDateTime pattern="HH:mm" timeZone="Europe/Paris"/>
+                            </h:outputText>
+                            <h:outputText value="-" rendered="#{not horaire.ouvert}" style="color:#999"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{horaire.heureOuverture}" rendered="#{horaire.ouvert}">
+                                <f:selectItems value="#{horaireController.heuresOuverture}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Heure de fermeture">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{horaire.heureFermeture}" rendered="#{horaire.ouvert}">
+                                <f:convertDateTime pattern="HH:mm" timeZone="Europe/Paris"/>
+                            </h:outputText>
+                            <h:outputText value="-" rendered="#{not horaire.ouvert}" style="color:#999"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{horaire.heureFermeture}" rendered="#{horaire.ouvert}">
+                                <f:selectItems value="#{horaireController.heuresFermeture}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Pause déjeuner" rendered="#{horaireController.withPauseDejeuner}">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{horaire.pauseDebut}-#{horaire.pauseFin}" 
+                                        rendered="#{horaire.ouvert and horaire.withPause}"/>
+                            <h:outputText value="-" rendered="#{not horaire.ouvert or not horaire.withPause}" 
+                                        style="color:#999"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <div class="ui-g">
+                                <div class="ui-g-6">
+                                    <p:selectOneMenu value="#{horaire.pauseDebut}" rendered="#{horaire.withPause}">
+                                        <f:selectItems value="#{horaireController.heuresPause}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="ui-g-6">
+                                    <p:selectOneMenu value="#{horaire.pauseFin}" rendered="#{horaire.withPause}">
+                                        <f:selectItems value="#{horaireController.heuresPause}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+            </p:dataTable>
+            
+            <f:facet name="footer">
+                <p:commandButton value="Enregistrer" icon="pi pi-save" 
+                               action="#{horaireController.saveHoraires()}" 
+                               styleClass="p-button-success"/>
+                <p:selectBooleanCheckbox value="#{horaireController.withPauseDejeuner}" 
+                                        style="margin-left:20px">
+                    <p:ajax update="@form"/>
+                </p:selectBooleanCheckbox>
+                <p:outputLabel value="Afficher pause déjeuner" style="margin-left:5px"/>
+            </f:facet>
+        </p:panel>
+        
+        <p:panel header="Exceptions">
+            <p:toolbar style="margin-bottom:10px">
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" 
+                                   action="#{horaireController.addException()}" 
+                                   styleClass="p-button-success"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+            <p:dataTable var="exception" value="#{horaireController.exceptions}" 
+                        paginator="true" rows="5" editable="true" editMode="row">
+                
+                <p:column headerText="Date" sortBy="#{exception.date}">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{exception.date}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:calendar value="#{exception.date}" pattern="dd/MM/yyyy" navigator="true"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Type">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            #{exception.type}
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{exception.type}">
+                                <f:selectItem itemLabel="Fermé" itemValue="FERME"/>
+                                <f:selectItem itemLabel="Ouverture spéciale" itemValue="OUVERTURE_SPECIALE"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Horaires" rendered="#{exception.type == 'OUVERTURE_SPECIALE'}">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            #{exception.heureOuverture}-#{exception.heureFermeture}
+                        </f:facet>
+                        <f:facet name="input">
+                            <div class="ui-g">
+                                <div class="ui-g-6">
+                                    <p:selectOneMenu value="#{exception.heureOuverture}">
+                                        <f:selectItems value="#{horaireController.heuresOuverture}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="ui-g-6">
+                                    <p:selectOneMenu value="#{exception.heureFermeture}">
+                                        <f:selectItems value="#{horaireController.heuresFermeture}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Description">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            #{exception.description}
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:inputText value="#{exception.description}" style="width:100%"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Actions" style="width:100px">
+                    <p:rowEditor/>
+                    <p:commandButton icon="pi pi-trash" styleClass="p-button-text p-button-danger"
+                                   action="#{horaireController.deleteException(exception)}"/>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+        
+        <p:panel header="Aperçu" style="margin-top:20px">
+            <p:schedule value="#{horaireController.eventModel}" timeZone="Europe/Paris" 
+                        aspectRatio="2" showWeekNumbers="true" showHeader="true" 
+                        leftHeaderTemplate="prev,next today" centerHeaderTemplate="title" 
+                        rightHeaderTemplate="month,agendaWeek" allDaySlot="false" 
+                        minTime="08:00:00" maxTime="20:00:00" slotDuration="00:30:00"/>
+        </p:panel>
+    </ui:define>
+</ui:composition>

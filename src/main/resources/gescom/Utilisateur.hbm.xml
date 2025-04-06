@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.gescom.model.Utilisateur" optimistic-lock="none" schema="public" table="utilisateur">
+        <id name="idutilisateur" type="int">
+            <column name="idutilisateur"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Typeutilisateur" fetch="select" name="typeutilisateur">
+            <column name="idtypeuser"/>
+        </many-to-one>
+        <many-to-one class="gescom.Role" fetch="select" name="role">
+            <column name="idrole" not-null="true"/>
+        </many-to-one>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+        <property name="prenom" type="string">
+            <column length="254" name="prenom"/>
+        </property>
+        <property name="email" type="string">
+            <column length="254" name="email"/>
+        </property>
+        <property name="telephone" type="string">
+            <column length="254" name="telephone"/>
+        </property>
+        <property name="motpass" type="string">
+            <column length="254" name="motpass"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="derniereconnexion" type="date">
+            <column length="13" name="derniereconnexion"/>
+        </property>
+        <property name="adresse" type="string">
+            <column length="254" name="adresse"/>
+        </property>
+        <property name="codepostale" type="string">
+            <column length="254" name="codepostale"/>
+        </property>
+        <property name="actif" type="java.lang.Boolean">
+            <column name="actif"/>
+        </property>
+        <property name="photo" type="string">
+            <column length="254" name="photo"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="compteutilisateurs" table="compteutilisateur">
+            <key>
+                <column name="idutilisateur" not-null="true"/>
+            </key>
+            <one-to-many class="gescom.Compteutilisateur"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="payses" table="pays">
+            <key>
+                <column name="idutilisateur"/>
+            </key>
+            <one-to-many class="gescom.Pays"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="collaborateurs" table="collaborateur">
+            <key>
+                <column name="idutilisateur" not-null="true"/>
+            </key>
+            <one-to-many class="gescom.Collaborateur"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="notificationses" table="notifications">
+            <key>
+                <column name="idutilisateur"/>
+            </key>
+            <one-to-many class="gescom.Notifications"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="sessions" table="session">
+            <key>
+                <column name="idutilisateur"/>
+            </key>
+            <one-to-many class="gescom.Session"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="villeses" table="villes">
+            <key>
+                <column name="idutilisateur"/>
+            </key>
+            <one-to-many class="gescom.Villes"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Catégories/Variétés</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <style>
+        .tree-table-container {
+            margin: 20px;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        
+         body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout-header {
+    background-color: #2196F3;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.layout-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.layout-menu {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dddddd;
+}
+
+.layout-content {
+    flex: 1;
+    padding: 1rem;
+    background-color: #ffffff;
+    margin: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.layout-footer {
+    background-color: #333333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+/* Styles pour les boutons d'action */
+.p-button-text.p-button-warning {
+    color: #ff9800;
+}
+
+.p-button-text.p-button-danger {
+    color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .layout-content {
+        margin: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .p-dialog {
+        width: 95% !important;
+    }
+}
+    </style>
+</h:head>
+
+<h:body>
+    <div class="layout-container">
+        <!-- En-tête -->
+        <div class="layout-header">
+            <h1>Gestion des Catégories/Variétés</h1>
+        </div>
+        
+        <!-- Barre de navigation/menu -->
+        <div class="layout-menu">
+            <p:menubar>
+                <p:menuitem value="Accueil" url="/index.xhtml" icon="pi pi-home"/>
+                <p:submenu label="Produits" icon="pi pi-box">
+                    <p:menuitem value="Liste des produits" url="/produits/list.xhtml" icon="pi pi-list"/>
+                    <p:menuitem value="Nouveau produit" url="/produits/new.xhtml" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:submenu label="Catégories" icon="pi pi-sitemap" expanded="true">
+                    <p:menuitem value="Arborescence" url="/categories/list.xhtml" icon="pi pi-table"/>
+                    <p:menuitem value="Nouvelle catégorie" onclick="PF('categorieDialog').show()" icon="pi pi-plus"/>
+                </p:submenu>
+                <p:menuitem value="Familles" url="/familles/list.xhtml" icon="pi pi-tags"/>
+            </p:menubar>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="layout-content">
+            <p:growl id="growl" showDetail="true" sticky="false"/>
+            
+            <div class="tree-table-container">
+<!--                 <p:treeTable value="#{categorieController.root}" var="node"  -->
+<!--                             selectionMode="single" selection="#{categorieController.selectedNode}" -->
+<!--                             scrollable="true" scrollHeight="500" -->
+<!--                             emptyMessage="Aucune donnée disponible"> -->
+                    
+<!--                     <p:column headerText="Nom" style="min-width:200px"> -->
+<!--                         <h:outputText value="#{node.data.nom}"/> -->
+<!--                     </p:column> -->
+                    
+<!--                     <p:column headerText="Type" style="width:120px"> -->
+<!--                         <p:tag value="#{node.data.type}"  -->
+<!--                               severity="#{node.data.type == 'CATEGORIE' ? 'primary' : 'info'}" -->
+<!--                               style="width:100%"/> -->
+<!--                     </p:column> -->
+                    
+<!--                     <p:column headerText="Description"> -->
+<!--                         <h:outputText value="#{node.data.description}"/> -->
+<!--                     </p:column> -->
+                    
+<!--                     <p:column headerText="Actions" style="width:180px" class="action-buttons"> -->
+<!--                         <p:commandButton icon="pi pi-plus" title="Ajouter sous-élément" -->
+<!--                                        styleClass="p-button-text p-button-success" -->
+<!--                                        action="#{categorieController.prepareAddChild(node)}"  -->
+<!--                                        update=":categorieForm" -->
+<!--                                        rendered="#{node.data.type == 'CATEGORIE'}"/> -->
+                        
+<!--                         <p:commandButton icon="pi pi-pencil" title="Modifier" -->
+<!--                                        styleClass="p-button-text p-button-warning" -->
+<!--                                        action="#{categorieController.prepareEdit(node)}" -->
+<!--                                        update=":categorieForm"/> -->
+<!--                     </p:column> -->
+                    
+<!--                     <p:column style="width:60px" class="action-buttons"> -->
+<!--                         <p:commandButton icon="pi pi-trash" title="Supprimer" -->
+<!--                                        styleClass="p-button-text p-button-danger" -->
+<!--                                        action="#{categorieController.delete(node)}" -->
+<!--                                        update="@form :growl"/> -->
+<!--                     </p:column> -->
+<!--                 </p:treeTable> -->
+
+                    <p:treeTable value="#{categorieController.root}" var="node" 
+            rendered="#{not empty categorieController.root}"
+            selectionMode="single" selection="#{categorieController.selectedNode}"
+            scrollable="true" scrollHeight="500"
+            emptyMessage="Aucune donnée disponible">
+    <!-- vos colonnes -->
+</p:treeTable>
+
+<p:panel rendered="#{empty categorieController.root}" styleClass="p-m-4">
+    <p:message severity="warn" summary="L'arborescence n'est pas disponible" />
+    <p:commandButton value="Recharger" action="#{categorieController.init()}" 
+                   update="@form" icon="pi pi-refresh"/>
+</p:panel>
+            </div>
+            
+            <!-- Bouton d'ajout racine -->
+            <p:toolbar style="margin-top:10px">
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter une racine" icon="pi pi-plus" 
+                                    action="#{categorieController.prepareAddRoot()}"
+                                    update=":categorieForm" styleClass="p-button-success"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+            <!-- Dialogue d'édition/ajout -->
+            <p:dialog header="Élément" widgetVar="categorieDialog" modal="true" width="600"
+                     closeOnEscape="true" draggable="false" resizable="false">
+                <h:form id="categorieForm">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel for="type" value="Type:"/>
+                        <p:selectOneRadio id="type" value="#{categorieController.currentItem.type}" 
+                                        required="true" requiredMessage="Le type est obligatoire">
+                            <f:selectItem itemLabel="Catégorie" itemValue="CATEGORIE"/>
+                            <f:selectItem itemLabel="Variété" itemValue="VARIETE"/>
+                            <p:ajax update="famille categorie"/>
+                        </p:selectOneRadio>
+                        
+                        <p:outputLabel for="nom" value="Nom:"/>
+                        <p:inputText id="nom" value="#{categorieController.currentItem.nom}" 
+                                    required="true" requiredMessage="Le nom est obligatoire"/>
+                        
+                        <p:outputLabel for="description" value="Description:"/>
+                        <p:inputTextarea id="description" value="#{categorieController.currentItem.description}"
+                                        rows="3" cols="40"/>
+                        
+                        <p:outputLabel for="famille" value="Famille parente:" 
+                                      rendered="#{categorieController.currentItem.type == 'CATEGORIE' and not empty categorieController.familles}"/>
+                        <p:selectOneMenu id="famille" value="#{categorieController.currentItem.famille}" 
+                                         rendered="#{categorieController.currentItem.type == 'CATEGORIE' and not empty categorieController.familles}">
+                            <f:selectItem itemLabel="-- Sélectionnez une famille --" itemValue="#{null}"/>
+                            <f:selectItems value="#{categorieController.familles}" var="fam" 
+                                          itemLabel="#{fam.nom}" itemValue="#{fam}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="categorie" value="Catégorie parente:" 
+                                      rendered="#{categorieController.currentItem.type == 'VARIETE' and not empty categorieController.categories}"/>
+                        <p:selectOneMenu id="categorie" value="#{categorieController.currentItem.categorieParente}" 
+                                         rendered="#{categorieController.currentItem.type == 'VARIETE' and not empty categorieController.categories}">
+                            <f:selectItem itemLabel="-- Sélectionnez une catégorie --" itemValue="#{null}"/>
+                            <f:selectItems value="#{categorieController.categories}" var="cat" 
+                                          itemLabel="#{cat.nom}" itemValue="#{cat}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" action="#{categorieController.save()}" 
+                                       update="@form :growl" 
+                                       oncomplete="if(!args.validationFailed) PF('categorieDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('categorieDialog').hide()" 
+                                       styleClass="p-button-secondary" immediate="true"/>
+                    </f:facet>
+                </h:form>
+            </p:dialog>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="layout-footer">
+            <p>Application de gestion - © 2023</p>
+        </div>
+    </div>
+</h:body>
+</html>

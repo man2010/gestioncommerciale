@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Contrat" optimistic-lock="none" schema="public" table="contrat">
+        <id name="idcontrat" type="int">
+            <column name="idcontrat"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Collaborateur" fetch="select" name="collaborateur">
+            <column name="idutilisateur"/>
+            <column name="idcollab"/>
+        </many-to-one>
+        <many-to-one class="gescom.Typecontrat" fetch="select" name="typecontrat">
+            <column name="idtypecontrat"/>
+        </many-to-one>
+        <property name="datedeb" type="date">
+            <column length="13" name="datedeb"/>
+        </property>
+        <property name="datefin" type="date">
+            <column length="13" name="datefin"/>
+        </property>
+        <property name="avantages" type="string">
+            <column name="avantages"/>
+        </property>
+        <property name="isvalid" type="java.lang.Boolean">
+            <column name="isvalid"/>
+        </property>
+        <property name="clauses" type="string">
+            <column name="clauses"/>
+        </property>
+        <set fetch="select" inverse="false" lazy="true" name="salaires" table="salairecontrat">
+            <key>
+                <column name="idcontrat" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Salaire">
+                <column name="idsalaire" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="augmentationsalaires" table="augmentationsalaire">
+            <key>
+                <column name="idcontrat"/>
+            </key>
+            <one-to-many class="gescom.Augmentationsalaire"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="employes" table="employe">
+            <key>
+                <column name="idcontrat"/>
+            </key>
+            <one-to-many class="gescom.Employe"/>
+        </set>
+    </class>
+</hibernate-mapping>

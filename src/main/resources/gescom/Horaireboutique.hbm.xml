@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Horaireboutique" optimistic-lock="none" schema="public" table="horaireboutique">
+        <id name="idhoraire" type="int">
+            <column name="idhoraire"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="joursemaine" type="string">
+            <column length="254" name="joursemaine"/>
+        </property>
+        <property name="heureopen" type="time">
+            <column length="15" name="heureopen"/>
+        </property>
+        <property name="heurefermeture" type="time">
+            <column length="15" name="heurefermeture"/>
+        </property>
+        <property name="ouvert" type="java.lang.Boolean">
+            <column name="ouvert"/>
+        </property>
+        <property name="casimprevu" type="java.lang.Boolean">
+            <column name="casimprevu"/>
+        </property>
+        <set fetch="select" inverse="false" lazy="true" name="boutiques" table="horairesboutique">
+            <key>
+                <column name="idhoraire" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Boutique">
+                <column name="idboutique" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

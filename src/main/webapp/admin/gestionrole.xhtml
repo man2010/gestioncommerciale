@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Gestion des rôles</title>
+</h:head>
+<h:body>
+    <ui:composition template="pageadmin.xhtml">
+        <ui:define name="content">
+            <h1>Gestion des rôles</h1>
+            
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" 
+                                     action="#{roleBean.prepareCreate}"
+                                     update=":roleForm:roleDialog" 
+                                     oncomplete="PF('roleDialog').show()"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:form id="roleForm">
+                <p:dataTable id="rolesTable" var="role" value="#{roleBean.roles}" 
+                             paginator="true" rows="10" selectionMode="single"
+                             selection="#{roleBean.selectedRole}" rowKey="#{role.idrole}">
+                    <p:column headerText="Nom">
+                        <h:outputText value="#{role.nomrole}" />
+                    </p:column>
+                    <p:column headerText="Description">
+                        <h:outputText value="#{role.description}" />
+                    </p:column>
+                    <p:column headerText="Actions" style="width:120px">
+                        <p:commandButton icon="pi pi-pencil" title="Modifier" 
+                                         action="#{roleBean.prepareEdit(role)}"
+                                         update=":roleForm:roleDialog" 
+                                         oncomplete="PF('roleDialog').show()"/>
+                        <p:commandButton icon="pi pi-trash" title="Supprimer" 
+                                         action="#{roleBean.deleteRole}"
+                                         update=":roleForm:rolesTable,:roleForm:growl"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dialog id="roleDialog" header="Rôle" widgetVar="roleDialog" 
+                          modal="true" resizable="false" style="width:500px">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel for="nomrole" value="Nom:" />
+                        <p:inputText id="nomrole" value="#{roleBean.selectedRole.nomrole}" 
+                                    required="true" requiredMessage="Nom requis"/>
+
+                        <h:outputLabel for="description" value="Description:" />
+                        <p:inputTextarea id="description" value="#{roleBean.selectedRole.description}" 
+                                        rows="3" cols="30"/>
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" 
+                                        action="#{roleBean.saveRole}"
+                                        update=":roleForm:rolesTable,:roleForm:growl" 
+                                        oncomplete="if(!args.validationFailed) PF('roleDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('roleDialog').hide()" 
+                                        immediate="true" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+</html>

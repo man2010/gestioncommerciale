@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Rapport" optimistic-lock="none" schema="public" table="rapport">
+        <id name="idrapport" type="int">
+            <column name="idrapport"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Archiveactiviteboutique" fetch="select" name="archiveactiviteboutique">
+            <column name="idlog"/>
+        </many-to-one>
+        <property name="titre" type="string">
+            <column length="254" name="titre"/>
+        </property>
+        <property name="type" type="string">
+            <column length="254" name="type"/>
+        </property>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="contenu" type="string">
+            <column name="contenu"/>
+        </property>
+        <property name="format" type="string">
+            <column length="254" name="format"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Pays" optimistic-lock="none" schema="public" table="pays">
+        <id name="idpays" type="int">
+            <column name="idpays"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Utilisateur" fetch="select" name="utilisateur">
+            <column name="idutilisateur"/>
+        </many-to-one>
+        <property name="nom" type="string">
+            <column length="254" name="nom"/>
+        </property>
+    </class>
+</hibernate-mapping>

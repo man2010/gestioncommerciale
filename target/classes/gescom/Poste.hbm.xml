@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Poste" optimistic-lock="none" schema="public" table="poste">
+        <id name="idposte" type="int">
+            <column name="idposte"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="libelle" type="string">
+            <column length="254" name="libelle"/>
+        </property>
+        <property name="description" type="string">
+            <column length="254" name="description"/>
+        </property>
+        <property name="niveauresponsabilite" type="java.lang.Integer">
+            <column name="niveauresponsabilite"/>
+        </property>
+        <property name="competencesrequises" type="string">
+            <column name="competencesrequises"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="employes" table="employe">
+            <key>
+                <column name="idposte"/>
+            </key>
+            <one-to-many class="gescom.Employe"/>
+        </set>
+    </class>
+</hibernate-mapping>

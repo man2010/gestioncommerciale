@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Piece" optimistic-lock="none" schema="public" table="piece">
+        <id name="idpiece" type="int">
+            <column name="idpiece"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Approvisionnement" fetch="select" name="approvisionnement">
+            <column name="id"/>
+        </many-to-one>
+        <many-to-one class="gescom.Lot" fetch="select" name="lot">
+            <column name="idlot"/>
+        </many-to-one>
+        <many-to-one class="gescom.Origine" fetch="select" name="origine">
+            <column name="idorigine"/>
+        </many-to-one>
+        <many-to-one class="gescom.Marchandise" fetch="select" name="marchandise">
+            <column name="idmarchandise"/>
+        </many-to-one>
+        <property name="datecreation" type="date">
+            <column length="13" name="datecreation"/>
+        </property>
+        <property name="etat" type="string">
+            <column length="254" name="etat"/>
+        </property>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <property name="qrcode" type="string">
+            <column length="254" name="qrcode"/>
+        </property>
+        <property name="prixachat" type="java.lang.Byte">
+            <column name="prixachat" precision="0" scale="0"/>
+        </property>
+        <property name="prixvente" type="java.lang.Byte">
+            <column name="prixvente" precision="0" scale="0"/>
+        </property>
+        <property name="promotion" type="java.lang.Boolean">
+            <column name="promotion"/>
+        </property>
+        <property name="paysorigine" type="string">
+            <column length="254" name="paysorigine"/>
+        </property>
+        <property name="description" type="string">
+            <column name="description"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="categorievarietes" table="categorievariete">
+            <key>
+                <column name="idpiece"/>
+            </key>
+            <one-to-many class="gescom.Categorievariete"/>
+        </set>
+        <set fetch="select" inverse="false" lazy="true" name="fluctuationprixes" table="variationprixarticle">
+            <key>
+                <column name="idpiece" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Fluctuationprix">
+                <column name="idhistorique" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="commandes" table="piececommandee">
+            <key>
+                <column name="idpiece" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Commande">
+                <column name="id" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

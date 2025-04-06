@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Approvisionnement" optimistic-lock="none" schema="public" table="approvisionnement">
+        <id name="id" type="int">
+            <column name="id"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Ligneapprovisionnement" fetch="select" name="ligneapprovisionnement">
+            <column name="lig_id"/>
+        </many-to-one>
+        <many-to-one class="gescom.Collaborateur" fetch="select" name="collaborateur">
+            <column name="idutilisateur_collab"/>
+            <column name="idcollab_collab"/>
+        </many-to-one>
+        <many-to-one class="gescom.Employe" fetch="select" name="employe">
+            <column name="idemploye"/>
+        </many-to-one>
+        <property name="reference" type="string">
+            <column length="254" name="reference"/>
+        </property>
+        <property name="dateapprovionnement" type="date">
+            <column length="13" name="dateapprovionnement"/>
+        </property>
+        <property name="statut" type="string">
+            <column length="254" name="statut"/>
+        </property>
+        <property name="montanttotal" type="java.lang.Byte">
+            <column name="montanttotal" precision="0" scale="0"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="pieces" table="piece">
+            <key>
+                <column name="id"/>
+            </key>
+            <one-to-many class="gescom.Piece"/>
+        </set>
+    </class>
+</hibernate-mapping>

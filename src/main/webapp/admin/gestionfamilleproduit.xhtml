@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Gestion des familles</title>
+</h:head>
+<h:body>
+    <ui:composition template="pageadmin.xhtml">
+        <ui:define name="content">
+            <h1>Gestion des familles de produits</h1>
+            
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" 
+                                     action="#{familleBean.prepareCreate}"
+                                     update=":familleForm:familleDialog" 
+                                     oncomplete="PF('familleDialog').show()"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:form id="familleForm">
+                <p:tree id="familleTree" value="#{familleBean.root}" var="famille" 
+                        selectionMode="single" selection="#{familleBean.selectedFamille}">
+                    <p:treeNode>
+                        <h:outputText value="#{famille.nom}" />
+                        <p:commandButton icon="pi pi-plus" title="Ajouter sous-famille" 
+                                         action="#{familleBean.prepareCreateSub(famille)}"
+                                         update=":familleForm:familleDialog" 
+                                         oncomplete="PF('familleDialog').show()" />
+                        <p:commandButton icon="pi pi-pencil" title="Modifier" 
+                                         action="#{familleBean.prepareEdit(famille)}"
+                                         update=":familleForm:familleDialog" 
+                                         oncomplete="PF('familleDialog').show()" />
+                        <p:commandButton icon="pi pi-trash" title="Supprimer" 
+                                         action="#{familleBean.deleteFamille}"
+                                         update=":familleForm:familleTree,:familleForm:growl" />
+                    </p:treeNode>
+                </p:tree>
+
+                <p:dialog id="familleDialog" header="Famille" widgetVar="familleDialog" 
+                          modal="true" resizable="false" style="width:500px">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel for="nom" value="Nom:" />
+                        <p:inputText id="nom" value="#{familleBean.selectedFamille.nom}" 
+                                    required="true" requiredMessage="Nom requis"/>
+
+                        <h:outputLabel for="code" value="Code:" />
+                        <p:inputText id="code" value="#{familleBean.selectedFamille.code}" />
+
+                        <h:outputLabel for="description" value="Description:" />
+                        <p:inputTextarea id="description" value="#{familleBean.selectedFamille.description}" 
+                                        rows="3" cols="30"/>
+
+                        <h:outputLabel for="parent" value="Parent:" rendered="#{familleBean.selectedParent != null}" />
+                        <h:outputText value="#{familleBean.selectedParent.nom}" rendered="#{familleBean.selectedParent != null}" />
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Enregistrer" 
+                                        action="#{familleBean.saveFamille}"
+                                        update=":familleForm:familleTree,:familleForm:growl" 
+                                        oncomplete="if(!args.validationFailed) PF('familleDialog').hide()"/>
+                        <p:commandButton value="Annuler" onclick="PF('familleDialog').hide()" 
+                                        immediate="true" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+</html>

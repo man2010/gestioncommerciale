@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Motif" optimistic-lock="none" schema="public" table="motif">
+        <id name="idmotif" type="int">
+            <column name="idmotif"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="motif" type="string">
+            <column name="motif"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="conges" table="lier">
+            <key>
+                <column name="idmotif" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Conge">
+                <column name="idconge" not-null="true"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

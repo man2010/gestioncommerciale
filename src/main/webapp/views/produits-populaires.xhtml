@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Produits Populaires</h1>
+        
+        <p:panel header="Période d'analyse" toggleable="true" style="margin-bottom:20px">
+            <p:panelGrid columns="3" layout="grid" style="width:100%">
+                <p:outputLabel for="periode" value="Période:"/>
+                <p:selectOneMenu id="periode" value="#{produitPopController.periode}">
+                    <f:selectItem itemLabel="7 derniers jours" itemValue="7_DAYS"/>
+                    <f:selectItem itemLabel="30 derniers jours" itemValue="30_DAYS"/>
+                    <f:selectItem itemLabel="Ce mois" itemValue="THIS_MONTH"/>
+                    <f:selectItem itemLabel="Mois dernier" itemValue="LAST_MONTH"/>
+                    <f:selectItem itemLabel="Cette année" itemValue="THIS_YEAR"/>
+                    <f:selectItem itemLabel="Personnalisée" itemValue="CUSTOM"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="dateFrom" value="Du:" rendered="#{produitPopController.periode == 'CUSTOM'}"/>
+                <p:calendar id="dateFrom" value="#{produitPopController.dateFrom}" 
+                           rendered="#{produitPopController.periode == 'CUSTOM'}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="dateTo" value="Au:" rendered="#{produitPopController.periode == 'CUSTOM'}"/>
+                <p:calendar id="dateTo" value="#{produitPopController.dateTo}" 
+                           rendered="#{produitPopController.periode == 'CUSTOM'}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:commandButton value="Analyser" icon="pi pi-chart-bar"
+                               action="#{produitPopController.analyser()}" 
+                               styleClass="p-button-outlined"/>
+            </p:panelGrid>
+        </p:panel>
+        
+        <div class="ui-grid ui-grid-responsive">
+            <div class="ui-grid-col-6">
+                <p:panel header="Top 10 des produits vendus">
+                    <p:chart type="bar" model="#{produitPopController.barModel}" style="height:300px"/>
+                </p:panel>
+            </div>
+            
+            <div class="ui-grid-col-6">
+                <p:panel header="Répartition par catégorie">
+                    <p:chart type="pie" model="#{produitPopController.pieModel}" style="height:300px"/>
+                </p:panel>
+            </div>
+        </div>
+        
+        <p:panel header="Détails des ventes" style="margin-top:20px">
+            <p:dataTable var="stat" value="#{produitPopController.statsProduits}" 
+                        paginator="true" rows="10">
+                
+                <p:column headerText="Produit" sortBy="#{stat.produit.nom}">
+                    #{stat.produit.nom}
+                </p:column>
+                
+                <p:column headerText="Quantité vendue" sortBy="#{stat.quantite}">
+                    #{stat.quantite}
+                </p:column>
+                
+                <p:column headerText="Chiffre d'affaires" sortBy="#{stat.ca}">
+                    <h:outputText value="#{stat.ca}">
+                        <f:convertNumber type="currency" currencySymbol="€"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Marge" sortBy="#{stat.marge}">
+                    <h:outputText value="#{stat.marge}">
+                        <f:convertNumber type="currency" currencySymbol="€"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Tendance">
+                    <p:trendChart value="#{stat.tendance}" title="Tendance" 
+                                 color="#{stat.tendance > 0 ? '#28a745' : '#dc3545'}"/>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </ui:define>
+</ui:composition>

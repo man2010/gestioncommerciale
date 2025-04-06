@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Client" optimistic-lock="none" schema="public" table="client">
+        <id name="idclient" type="int">
+            <column name="idclient"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="pointfidelite" type="java.lang.Integer">
+            <column name="pointfidelite"/>
+        </property>
+        <property name="dateinscription" type="date">
+            <column length="13" name="dateinscription"/>
+        </property>
+        <property name="coordonneegps" type="string">
+            <column length="254" name="coordonneegps"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="commandes" table="commande">
+            <key>
+                <column name="idclient"/>
+            </key>
+            <one-to-many class="gescom.Commande"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="preferences" table="preferenceclient">
+            <key>
+                <column name="idclient" not-null="true"/>
+            </key>
+            <many-to-many entity-name="gescom.Preference">
+                <column name="idpreference" not-null="true"/>
+            </many-to-many>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="avises" table="avis">
+            <key>
+                <column name="idclient"/>
+            </key>
+            <one-to-many class="gescom.Avis"/>
+        </set>
+    </class>
+</hibernate-mapping>

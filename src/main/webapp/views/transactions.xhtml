@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/menu.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestion des Transactions</h1>
+        
+        <p:panel header="Filtres" toggleable="true" collapsed="true" style="margin-bottom:20px">
+            <p:panelGrid columns="4" layout="grid" style="width:100%">
+                <p:outputLabel for="dateFrom" value="Du:"/>
+                <p:calendar id="dateFrom" value="#{transactionController.dateFrom}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="dateTo" value="Au:"/>
+                <p:calendar id="dateTo" value="#{transactionController.dateTo}" 
+                           pattern="dd/MM/yyyy" navigator="true"/>
+                
+                <p:outputLabel for="type" value="Type:"/>
+                <p:selectOneMenu id="type" value="#{transactionController.selectedType}">
+                    <f:selectItem itemLabel="Tous types" itemValue="#{null}"/>
+                    <f:selectItem itemLabel="Vente" itemValue="VENTE"/>
+                    <f:selectItem itemLabel="Remboursement" itemValue="REMBOURSEMENT"/>
+                    <f:selectItem itemLabel="Avoir" itemValue="AVOIR"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="caisse" value="Caisse:"/>
+                <p:selectOneMenu id="caisse" value="#{transactionController.selectedCaisse}">
+                    <f:selectItem itemLabel="Toutes caisses" itemValue="#{null}"/>
+                    <f:selectItems value="#{transactionController.caisses}" var="c" 
+                                 itemLabel="#{c.libelle}" itemValue="#{c}"/>
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="montantMin" value="Montant min:"/>
+                <p:inputNumber id="montantMin" value="#{transactionController.montantMin}" 
+                             minValue="0" decimalPlaces="2"/>
+                
+                <p:outputLabel for="montantMax" value="Montant max:"/>
+                <p:inputNumber id="montantMax" value="#{transactionController.montantMax}" 
+                             minValue="0" decimalPlaces="2"/>
+                
+                <p:commandButton value="Filtrer" icon="pi pi-filter" 
+                               action="#{transactionController.loadTransactions()}" 
+                               styleClass="p-button-outlined"/>
+                <p:commandButton value="Réinitialiser" icon="pi pi-refresh" 
+                               action="#{transactionController.resetFilters()}" 
+                               styleClass="p-button-outlined p-button-secondary"/>
+            </p:panelGrid>
+        </p:panel>
+        
+        <p:dataTable var="tx" value="#{transactionController.transactions}" 
+                    paginator="true" rows="10" selectionMode="single"
+                    selection="#{transactionController.selectedTransaction}" rowKey="#{tx.id}">
+            
+            <p:column headerText="ID" sortBy="#{tx.id}" style="width:80px">
+                #{tx.id}
+            </p:column>
+            
+            <p:column headerText="Date/Heure" sortBy="#{tx.dateHeure}">
+                <h:outputText value="#{tx.dateHeure}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Type">
+                <p:tag value="#{tx.type}" 
+                      severity="#{tx.type == 'VENTE' ? 'success' : tx.type == 'REMBOURSEMENT' ? 'danger' : 'info'}"/>
+            </p:column>
+            
+            <p:column headerText="Montant" sortBy="#{tx.montant}">
+                <h:outputText value="#{tx.montant}">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Mode Paiement">
+                #{tx.modePaiement}
+            </p:column>
+            
+            <p:column headerText="Caisse">
+                #{tx.caisse.libelle}
+            </p:column>
+            
+            <p:column headerText="Vendeur">
+                #{tx.vendeur.nom}
+            </p:column>
+            
+            <p:column headerText="Actions" style="width:120px">
+                <p:commandButton icon="pi pi-eye" styleClass="p-button-text p-button-info"
+                               action="#{transactionController.viewDetails(tx)}" 
+                               update=":txDetail"/>
+                <p:commandButton icon="pi pi-print" styleClass="p-button-text p-button-help"
+                               action="#{transactionController.printTransaction(tx)}"/>
+            </p:column>
+        </p:dataTable>
+        
+        <p:dialog header="Détails Transaction" widgetVar="txDialog" modal="true" width="700" height="500">
+            <p:outputPanel id="txDetail">
+                <ui:fragment rendered="#{not empty transactionController.selectedTransaction}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Référence:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.reference}" 
+                                     style="font-weight:bold"/>
+                        
+                        <p:outputLabel value="Date/Heure:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.dateHeure}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Type:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.type}">
+                            <p:tag value="#{transactionController.selectedTransaction.type}" 
+                                  severity="#{transactionController.selectedTransaction.type == 'VENTE' ? 'success' : transactionController.selectedTransaction.type == 'REMBOURSEMENT' ? 'danger' : 'info'}"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Montant:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.montant}" 
+                                     style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="€"/>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel value="Mode Paiement:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.modePaiement}"/>
+                        
+                        <p:outputLabel value="Caisse:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.caisse.libelle}"/>
+                        
+                        <p:outputLabel value="Vendeur:"/>
+                        <p:outputLabel value="#{transactionController.selectedTransaction.vendeur.nom}"/>
+                    </p:panelGrid>
+                    
+                    <p:dataTable var="ligne" value="#{transactionController.selectedTransaction.lignes}" 
+                                style="margin-top:20px">
+                        <p:column headerText="Produit">#{ligne.produit.nom}</p:column>
+                        <p:column headerText="Quantité">#{ligne.quantite}</p:column>
+                        <p:column headerText="Prix unitaire">
+                            <h:outputText value="#{ligne.prixUnitaire}">
+                                <f:convertNumber type="currency" currencySymbol="€"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Total">
+                            <h:outputText value="#{ligne.prixUnitaire * ligne.quantite}">
+                                <f:convertNumber type="currency" currencySymbol="€"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </ui:fragment>
+            </p:outputPanel>
+        </p:dialog>
+        
+        <p:panel header="Statistiques" style="margin-top:30px">
+            <p:chart type="bar" model="#{transactionController.statsModel}" style="height:300px"/>
+            
+            <p:panelGrid columns="3" layout="grid" style="width:100%;margin-top:20px">
+                <p:outputLabel value="Total ventes:"/>
+                <p:outputLabel value="#{transactionController.totalVentes}" style="font-weight:bold">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </p:outputLabel>
+                
+                <p:outputLabel value="Nombre transactions:"/>
+                <p:outputLabel value="#{transactionController.nbTransactions}" style="font-weight:bold"/>
+                
+                <p:outputLabel value="Moyenne panier:"/>
+                <p:outputLabel value="#{transactionController.moyennePanier}" style="font-weight:bold">
+                    <f:convertNumber type="currency" currencySymbol="€"/>
+                </p:outputLabel>
+            </p:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

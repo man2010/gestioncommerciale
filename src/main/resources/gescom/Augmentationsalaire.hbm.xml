@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Augmentationsalaire" optimistic-lock="none" schema="public" table="augmentationsalaire">
+        <id name="idaugmentation" type="int">
+            <column name="idaugmentation"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="gescom.Contrat" fetch="select" name="contrat">
+            <column name="idcontrat"/>
+        </many-to-one>
+        <many-to-one class="gescom.Varietesalaire" fetch="select" name="varietesalaire">
+            <column name="idvariete"/>
+        </many-to-one>
+        <property name="date" type="date">
+            <column length="13" name="date"/>
+        </property>
+        <property name="isvalide" type="java.lang.Boolean">
+            <column name="isvalide"/>
+        </property>
+        <property name="montantprecedent" type="java.lang.Byte">
+            <column name="montantprecedent" precision="0" scale="0"/>
+        </property>
+        <property name="nouveaumontant" type="java.lang.Byte">
+            <column name="nouveaumontant" precision="0" scale="0"/>
+        </property>
+    </class>
+</hibernate-mapping>

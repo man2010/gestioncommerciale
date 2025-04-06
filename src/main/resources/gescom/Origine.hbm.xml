@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 1 avr. 2025, 20:05:01 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="gescom.Origine" optimistic-lock="none" schema="public" table="origine">
+        <id name="idorigine" type="int">
+            <column name="idorigine"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="nomorigine" type="string">
+            <column length="254" name="nomorigine"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="pieces" table="piece">
+            <key>
+                <column name="idorigine"/>
+            </key>
+            <one-to-many class="gescom.Piece"/>
+        </set>
+    </class>
+</hibernate-mapping>
