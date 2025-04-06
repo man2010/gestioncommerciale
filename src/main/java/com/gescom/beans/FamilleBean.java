@@ -12,14 +12,25 @@ import java.util.List;
 @ManagedBean
 @ViewScoped
 public class FamilleBean {
+	
+	
     private Famille currentFamille;
     private Famille newFamille;
     private List<Famille> familles;
     private List<Famille> parentsDisponibles;
     private final FamilleHome familleHome;
+    
+    /**/
+    
+    private List<Famille> root;
+    private Famille selectedFamille;
+    private Famille selectedParent;
+    
+    /**/
 
     public FamilleBean() {
         this.familleHome = (FamilleHome) SpringUtils.getContext().getBean("famillehome");
+        root = familleHome.findRootFamilies();
         init();
     }
 
@@ -92,4 +103,58 @@ public class FamilleBean {
     public void setNewFamille(Famille newFamille) { this.newFamille = newFamille; }
     public List<Famille> getFamilles() { return familles; }
     public List<Famille> getParentsDisponibles() { return parentsDisponibles; }
+    
+    
+    
+    /**/
+    
+    public void prepareCreate() {
+        selectedFamille = new Famille();
+        selectedParent = null;
+    }
+    
+    public void prepareCreateSub(Famille parent) {
+        selectedFamille = new Famille();
+        selectedParent = parent;
+    }
+    
+    public void prepareEdit(Famille famille) {
+        selectedFamille = famille;
+        selectedParent = famille.getParent();
+    }
+    
+    public void saveFamille() {
+        selectedFamille.setParent(selectedParent);
+        
+        if (selectedFamille.getId() == null) {
+            familleHome.persist(selectedFamille);
+        } else {
+            familleHome.update(selectedFamille);
+        }
+        
+        root = familleHome.findRootFamilies();
+        FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Famille enregistré avec succès"));
+    }
+    
+    public void deleteFamille() {
+        familleHome.delete(selectedFamille);
+        root = familleHome.findRootFamilies();
+        FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Famille supprimé avec succès"));
+    }
+    
+    public int getCountFamilles() {
+        return familleHome.countAll();
+    }
+    
+    // Getters/Setters supplémentaires
+    public List<Famille> getRoot() { return root; }
+    public Famille getSelectedFamille() { return selectedFamille; }
+    public void setSelectedFamille(Famille selectedFamille) { this.selectedFamille = selectedFamille; }
+    public Famille getSelectedParent() { return selectedParent; }
+
+    
+    
+    /**/
 }

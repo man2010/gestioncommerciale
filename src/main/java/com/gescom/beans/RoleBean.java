@@ -1,7 +1,10 @@
 package com.gescom.beans;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+
 import com.gescom.dao.RoleHome;
 import com.gescom.model.Role;
 import java.util.List;
@@ -10,6 +13,13 @@ import com.gescom.utils.SpringUtils; // Assurez-vous d'avoir cette classe
 @ManagedBean(name="roleBean")
 @SessionScoped
 public class RoleBean {
+	
+	/**/
+	
+	private List<Role> roles;
+    private Role selectedRole;
+	
+	/**/
     
     private List<Role> visibleRoles;
     private RoleHome roleHome;
@@ -17,6 +27,9 @@ public class RoleBean {
     public RoleBean() {
         // Récupération des beans depuis le contexte Spring
         this.roleHome = (RoleHome) SpringUtils.getContext().getBean("rolehome");
+        /**/
+        roles = roleHome.findAll();
+        /**/
         loadVisibleRoles();
     }
     
@@ -27,4 +40,50 @@ public class RoleBean {
     public List<Role> getVisibleRoles() {
         return visibleRoles;
     }
+    
+    
+    
+    /**/
+    
+    
+    public void prepareCreate() {
+        selectedRole = new Role();
+    }
+    
+    public void prepareEdit(Role role) {
+        selectedRole = role;
+    }
+    
+    public void saveRole() {
+        if (selectedRole.getIdrole() == 0) {
+            roleHome.persist(selectedRole);
+        } else {
+            roleHome.update(selectedRole);
+        }
+        roles = roleHome.findAll();
+        visibleRoles = roleHome.findAllVisibleRoles();
+        FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Rôle enregistré avec succès"));
+    }
+    
+    public void deleteRole() {
+        roleHome.delete(selectedRole.getIdrole());
+        roles = roleHome.findAll();
+        visibleRoles = roleHome.findAllVisibleRoles();
+        FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Rôle enregistré avec succès"));
+    }
+    
+    public int getCountRoles() {
+        return roles != null ? roles.size() : 0;
+    }
+    
+    // Getters/Setters supplémentaires
+    public List<Role> getRoles() { return roles; }
+    public Role getSelectedRole() { return selectedRole; }
+    public void setSelectedRole(Role selectedRole) { this.selectedRole = selectedRole; }
+
+    
+    
+    /**/
 }

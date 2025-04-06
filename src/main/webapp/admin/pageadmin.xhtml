@@ -61,22 +61,22 @@
             </div>
             <ul class="sidebar-menu">
                 <li>
-                    <h:link value="Tableau de bord" outcome="pageadmin" styleClass="#{facesContext.viewRoot.viewId eq 'pageadmin.xhtml' ? 'active-menu' : ''}">
+                    <h:link value="Tableau de bord" outcome="pageadmin" styleClass="#{facesContext.viewRoot.viewId eq '/admin/pageadmin.xhtml' ? 'active-menu' : ''}">
                         <i class="pi pi-home"></i> Tableau de bord
                     </h:link>
                 </li>
                 <li>
-                    <h:link value="Utilisateurs" outcome="gestionuser" styleClass="#{facesContext.viewRoot.viewId eq 'gestionuser.xhtml' ? 'active-menu' : ''}">
+                    <h:link value="Utilisateurs" outcome="gestionuser" styleClass="#{facesContext.viewRoot.viewId eq '/admin/gestionuser.xhtml' ? 'active-menu' : ''}">
                         <i class="pi pi-users"></i> Utilisateurs
                     </h:link>
                 </li>
                 <li>
-                    <h:link value="Rôles" outcome="gestionrole" styleClass="#{facesContext.viewRoot.viewId eq 'gestionrole.xhtml' ? 'active-menu' : ''}">
+                    <h:link value="Rôles" outcome="gestionrole" styleClass="#{facesContext.viewRoot.viewId eq '/admin/gestionrole.xhtml' ? 'active-menu' : ''}">
                         <i class="pi pi-shield"></i> Rôles
                     </h:link>
                 </li>
                 <li>
-                    <h:link value="Familles produits" outcome="gestionfamilleproduit" styleClass="#{facesContext.viewRoot.viewId eq 'gestionfamilleproduit.xhtml' ? 'active-menu' : ''}">
+                    <h:link value="Familles produits" outcome="gestionfamilleproduit" styleClass="#{facesContext.viewRoot.viewId eq '/admin/gestionfamilleproduit.xhtml' ? 'active-menu' : ''}">
                         <i class="pi pi-tags"></i> Familles produits
                     </h:link>
                 </li>
@@ -86,10 +86,7 @@
         <!-- Content -->
         <div class="admin-content">
             <div class="admin-header">
-                <h2>#{facesContext.viewRoot.viewId eq 'pageadmin.xhtml' ? 'Tableau de bord' : 
-                     facesContext.viewRoot.viewId eq  'gestionuser.xhtml' ? 'Gestion des utilisateurs' : 
-                     facesContext.viewRoot.viewId eq  'gestionrole.xhtml' ? 'Gestion des rôles' : 
-                     facesContext.viewRoot.viewId eq  'gestionfamilleproduit.xhtml' ? 'Gestion des familles produits'}</h2>
+                <h2>#{adminBean.pageTitle}</h2>
                 <div>
                     <p:commandButton value="Déconnexion" action="#{utilisateurBean.logout}" 
                                     icon="pi pi-sign-out" styleClass="p-button-danger"/>

@@ -91,4 +91,13 @@ public class FamilleHome {
             return session.createQuery(cq).getSingleResult() == 0;
         }
     }
+    
+    /**/
+    
+    public int countAll() {
+        try (Session session = SessionFactoryProvider.getSessionFactory().openSession()) {
+            return ((Number)session.createQuery("SELECT COUNT(*) FROM Famille").uniqueResult()).intValue();
+        }
+    }
+    /**/
 }

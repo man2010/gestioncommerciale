@@ -3,6 +3,9 @@ package com.gescom.beans;
 import com.gescom.dao.UtilisateurHome;
 import com.gescom.model.Utilisateur;
 import com.gescom.utils.SpringUtils;
+
+import java.util.List;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -11,6 +14,13 @@ import javax.faces.context.FacesContext;
 @ManagedBean(name="utilisateurBean")
 @SessionScoped
 public class UtilisateurBean {
+	
+	/**/
+	
+	private List<Utilisateur> utilisateurs;
+    private Utilisateur selectedUser;
+	
+	/**/
     
     private Utilisateur utilisateur;
     private String confirmPassword;
@@ -20,8 +30,12 @@ public class UtilisateurBean {
    
     public UtilisateurBean() {
         try {
+        	
             this.utilisateur = (Utilisateur) SpringUtils.getContext().getBean("utilisateur");
             this.utilisateurHome = (UtilisateurHome) SpringUtils.getContext().getBean("utilisateurhome");
+            /**/
+            utilisateurs = utilisateurHome.findAll();
+            /**/
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -72,7 +86,54 @@ public class UtilisateurBean {
             return null;
         }
     }
+    /**/
     
+    
+    public void prepareCreate() {
+        selectedUser = new Utilisateur();
+        selectedUser.setActif(true);
+        selectedUser.setDatecreation(new java.sql.Date(System.currentTimeMillis()));
+    }
+    
+    public void prepareEdit(Utilisateur user) {
+        selectedUser = user;
+    }
+    
+    public void saveUser() {
+        if (selectedUser.getIdutilisateur() == 0) {
+            utilisateurHome.persist(selectedUser);
+        } else {
+            utilisateurHome.update(selectedUser);
+        }
+        utilisateurs = utilisateurHome.findAll();
+        FacesContext.getCurrentInstance().addMessage(null, 
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Utilisateur enregistré avec succès"));
+    }
+    
+    public void deleteUser() {
+        utilisateurHome.delete(selectedUser.getIdutilisateur());
+        utilisateurs = utilisateurHome.findAll();
+        FacesContext.getCurrentInstance().addMessage(null, 
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Utilisateur supprimé avec succès"));
+    }
+    
+    public String logout() {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "/login.xhtml?faces-redirect=true";
+    }
+    
+    public int getCountUtilisateurs() {
+        return utilisateurs != null ? utilisateurs.size() : 0;
+    }
+    
+    // Getters/Setters supplémentaires
+    public List<Utilisateur> getUtilisateurs() { return utilisateurs; }
+    public Utilisateur getSelectedUser() { return selectedUser; }
+    public void setSelectedUser(Utilisateur selectedUser) { this.selectedUser = selectedUser; }
+
+    
+    
+    /**/
     // Getters et Setters
     public Utilisateur getUtilisateur() { return utilisateur; }
     public void setUtilisateur(Utilisateur utilisateur) { this.utilisateur = utilisateur; }

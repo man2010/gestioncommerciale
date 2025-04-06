@@ -149,4 +149,8 @@ public class UtilisateurHome {
     private boolean checkPassword(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
+    
+    
+    
+    
 }
