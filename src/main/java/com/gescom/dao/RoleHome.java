@@ -7,6 +7,8 @@ import com.gescom.utils.SessionFactoryProvider;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+
+//simport org.hibernate.criterion.Restrictions;
 import java.util.List;
 
 public class RoleHome {
@@ -15,8 +17,10 @@ public class RoleHome {
 	public List<Role> findAllVisibleRoles() {
         try (Session session = HibernateUtils.getSessionFactory().openSession()) {
             return session.createCriteria(Role.class)
-                         .add(Restrictions.not(Restrictions.eq("nomrole", "admin")))
-                         .list();
+            		.add(Restrictions.not(Restrictions.eq("nomrole", "admin")))
+            		      .list();
+                       
+                         
         }
     }
     

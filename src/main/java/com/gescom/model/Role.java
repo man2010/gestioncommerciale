@@ -28,7 +28,7 @@ public class Role implements java.io.Serializable {
 //    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private Set<Permission> permissions = new HashSet<>(0);
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Utilisateur> utilisateurs = new HashSet<>(0);
 
     public Role() {

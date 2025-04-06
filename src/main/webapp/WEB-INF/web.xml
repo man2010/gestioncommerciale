@@ -21,7 +21,7 @@
   
   
    <welcome-file-list>
-<welcome-file>menu.jsf</welcome-file>
+<welcome-file>register2.jsf</welcome-file>
 </welcome-file-list>
  
 <servlet>

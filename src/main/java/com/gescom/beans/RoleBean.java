@@ -42,7 +42,18 @@ public class RoleBean {
     }
     
     
-    
+    public Role getRoleById(int idRole) {
+        try {
+            // Solution avec RoleHome
+            return roleHome.findById(idRole);
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Erreur", "Impossible de charger le rôle"));
+            return null;
+        }
+    }
+   
     /**/
     
     
@@ -83,6 +94,7 @@ public class RoleBean {
     public Role getSelectedRole() { return selectedRole; }
     public void setSelectedRole(Role selectedRole) { this.selectedRole = selectedRole; }
 
+	
     
     
     /**/

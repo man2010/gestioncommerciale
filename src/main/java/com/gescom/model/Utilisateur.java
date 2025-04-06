@@ -20,7 +20,7 @@ public class Utilisateur implements java.io.Serializable {
 //    @JoinColumn(name = "idtypeutilisateur")
 //    private Typeutilisateur typeutilisateur;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idrole", nullable = false)
     private Role role;
 

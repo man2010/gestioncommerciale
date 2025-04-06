@@ -120,7 +120,7 @@ public class UtilisateurHome {
             
             // Valeurs par défaut
             utilisateur.setDatecreation(new java.sql.Date(System.currentTimeMillis()));
-            utilisateur.setActif(true);
+            utilisateur.setActif(false);
             
             session.persist(utilisateur);
             tx.commit();

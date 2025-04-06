@@ -337,8 +337,8 @@
             </div>
             
             <h:form id="loginForm">
-                <p:messages autoUpdate="true" closable="true" showDetail="true" 
-                           styleClass="p-mb-4" severity="error,warn" />
+               <p:messages id="messages" autoUpdate="true" closable="true" showDetail="true" 
+           styleClass="p-mb-4" severity="error,warn" />
                 
                 <div class="p-fluid">
                     <div class="p-field">
@@ -364,14 +364,8 @@
                         </p:password>
                     </div>
                     
-<!--                     <div class="remember-me"> -->
-<!--                         <p:selectBooleanCheckbox id="remember" value="#{utilisateurBean.rememberMe}" /> -->
-<!--                         <label for="remember">Se souvenir de moi</label> -->
-<!--                     </div> -->
+
                     
-                    <div class="forgot-password">
-                        <h:link value="Mot de passe oublié ?" outcome="forgot-password" />
-                    </div>
                     
                     <p:commandButton value="Se connecter" 
                                    icon="pi pi-sign-in"
