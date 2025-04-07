@@ -98,6 +98,54 @@ public class RoleBean {
         return roles != null ? roles.size() : 0;
     }
     
+    
+    
+    
+    
+    
+    public void deletedRole(Role role) {
+        try {
+            roleHome.delete(role.getIdrole());
+            roles = roleHome.findAll();
+            visibleRoles = roleHome.findAllVisibleRoles();
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                "Succès", "Rôle supprimé avec succès"));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Erreur", "Impossible de supprimer le rôle"));
+        }
+    }
+
+    // Modifiez saveRole comme ceci
+    public void savedRole() {
+        try {
+            if (selectedRole.getIdrole() == 0) {
+                roleHome.persist(selectedRole);
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                    "Succès", "Rôle créé avec succès"));
+            } else {
+                roleHome.update(selectedRole);
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                    "Succès", "Rôle modifié avec succès"));
+            }
+            roles = roleHome.findAll();
+            visibleRoles = roleHome.findAllVisibleRoles();
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Erreur", "Erreur lors de l'enregistrement"));
+        }
+    }
+    
+    
+    
+    
+    
+    
     // Getters/Setters supplémentaires
     public List<Role> getRoles() { return roles; }
     public Role getSelectedRole() { return selectedRole; }
