@@ -53,7 +53,16 @@ public class RoleBean {
             return null;
         }
     }
-   
+    
+    public Role findRoleById(Integer idRole) {
+        if (idRole == null) {
+            return null;
+        }
+        return visibleRoles.stream()
+                          .filter(r -> r.getIdrole() == idRole) // Comparaison avec == pour les primitifs
+                          .findFirst()
+                          .orElse(null);
+    }
     /**/
     
     

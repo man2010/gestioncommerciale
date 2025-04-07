@@ -107,9 +107,9 @@ public class UtilisateurBean {
     
     public void prepareEdit(Utilisateur user) {
     	 selectedUser = user;
-         if(selectedUser.getRole() == null) {
-             selectedUser.setRole(new Role());
-         }
+//         if(selectedUser.getRole() == null) {
+//             selectedUser.setRole(new Role());
+//         }
     }
     
     public void saveUser() {
@@ -138,7 +138,7 @@ public class UtilisateurBean {
     public int getCountUtilisateurs() {
         return utilisateurs != null ? utilisateurs.size() : 0;
     }
-    public void toggleStatus(Utilisateur user) {
+   /* public void toggleStatus(Utilisateur user) {
         user.setActif(!user.getActif());
         utilisateurHome.update(user);
         utilisateurs = utilisateurHome.findAll();
@@ -147,7 +147,7 @@ public class UtilisateurBean {
             "Statut modifié", 
             "Le statut de " + user.getPrenom() + " a été mis à jour");
         FacesContext.getCurrentInstance().addMessage(null, message);
-    }
+    }*/
     
     public void deleteUser(Utilisateur user) {
         utilisateurHome.delete(user.getIdutilisateur());
@@ -192,6 +192,20 @@ public class UtilisateurBean {
         } catch (Exception e) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, 
                 "Erreur", "Une erreur est survenue: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, message);
+        }
+    }
+    
+    public void toggleStatus(Utilisateur user) {
+        try {
+            user.setActif(!user.getActif());
+            utilisateurHome.update(user);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Succès", "Statut modifié avec succès");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+        } catch (Exception e) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                "Erreur", "Erreur lors du changement de statut: " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }

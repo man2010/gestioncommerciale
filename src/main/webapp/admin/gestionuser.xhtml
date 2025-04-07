@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
@@ -19,6 +19,10 @@
         
         .status-toggle {
             cursor: pointer;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 500;
         }
         
         .status-active {
@@ -34,6 +38,10 @@
         .small-button {
             padding: 0.3rem 0.6rem;
             font-size: 0.875rem;
+        }
+        
+        .dialog-grid {
+            margin-bottom: 15px;
         }
     </style>
 </h:head>
@@ -64,23 +72,24 @@
                          styleClass="p-datatable-striped p-datatable-gridlines"
                          emptyMessage="Aucun utilisateur trouvé">
                 
-                <p:column headerText="Nom complet" sortBy="#{user.prenom} #{user.nom}">
+                <p:column headerText="Nom complet">
                     <h:outputText value="#{user.prenom} #{user.nom}" />
                 </p:column>
                 
-                <p:column headerText="Email" sortBy="#{user.email}">
+                <p:column headerText="Email">
                     <h:outputText value="#{user.email}" />
                 </p:column>
                 
-                <p:column headerText="Rôle" sortBy="#{user.role.nomrole}">
+                <p:column headerText="Rôle">
                     <h:outputText value="#{user.role.nomrole}" />
                 </p:column>
                 
-                <p:column headerText="Statut" sortBy="#{user.actif}">
+                <p:column headerText="Statut">
                     <p:commandButton value="#{user.actif ? 'Actif' : 'Inactif'}" 
                                      styleClass="status-toggle #{user.actif ? 'status-active' : 'status-inactive'}"
                                      action="#{utilisateurBean.toggleStatus(user)}"
-                                     update=":userForm:usersTable :growl"/>
+                                     update=":userForm:usersTable :growl"
+                                     process="@this"/>
                 </p:column>
                 
                 <p:column headerText="Actions" styleClass="action-column">
@@ -107,36 +116,40 @@
             </p:confirmDialog>
 
             <p:dialog id="userDialog" header="Gestion utilisateur" widgetVar="userDialog" 
-                      modal="true" resizable="false" style="width:600px">
-                <h:panelGrid columns="2" cellpadding="5">
-                    <h:outputLabel for="prenom" value="Prénom:" />
+                      modal="true" resizable="false" style="width:650px">
+                <h:panelGrid columns="2" cellpadding="5" styleClass="dialog-grid">
+                    <h:outputLabel for="prenom" value="Prénom *" />
                     <p:inputText id="prenom" value="#{utilisateurBean.selectedUser.prenom}" 
                                 required="true" requiredMessage="Prénom requis"/>
 
-                    <h:outputLabel for="nom" value="Nom:" />
+                    <h:outputLabel for="nom" value="Nom *" />
                     <p:inputText id="nom" value="#{utilisateurBean.selectedUser.nom}" 
                                 required="true" requiredMessage="Nom requis"/>
 
-                    <h:outputLabel for="email" value="Email:" />
+                    <h:outputLabel for="email" value="Email *" />
                     <p:inputText id="email" value="#{utilisateurBean.selectedUser.email}" 
                                 required="true" requiredMessage="Email requis"/>
 
-                    <h:outputLabel for="role" value="Rôle:" />
-                    <p:selectOneMenu id="role" value="#{utilisateurBean.selectedUser.role}" 
+                    <h:outputLabel for="password" value="Mot de passe *" />
+                    <p:password id="password" value="#{utilisateurBean.selectedUser.motpass}" 
+                               feedback="false" required="true" requiredMessage="Mot de passe requis"/>
+
+                    <h:outputLabel for="role" value="Rôle *" />
+                    <p:selectOneMenu id="role" value="#{utilisateurBean.selectedUser.role.idrole}" 
                                     required="true" requiredMessage="Rôle requis">
                         <f:selectItems value="#{roleBean.visibleRoles}" 
                                       var="role" 
                                       itemLabel="#{role.nomrole}" 
-                                      itemValue="#{role}" />
+                                      itemValue="#{role.idrole}" />
                     </p:selectOneMenu>
 
-                    <h:outputLabel for="actif" value="Statut:" />
+                    <h:outputLabel for="actif" value="Statut" />
                     <p:selectBooleanCheckbox id="actif" value="#{utilisateurBean.selectedUser.actif}" />
                 </h:panelGrid>
 
                 <f:facet name="footer">
                     <p:commandButton value="Enregistrer" icon="pi pi-check"
-                                    action="#{utilisateurBean.saveUser}"
+                                    action="#{utilisateurBean.savedUser}"
                                     update=":userForm:usersTable :growl"
                                     oncomplete="if(!args.validationFailed) PF('userDialog').hide()"/>
                     <p:commandButton value="Annuler" icon="pi pi-times" 
