@@ -15,7 +15,6 @@ public class Catalogue implements java.io.Serializable {
 	private String code;
 	private Date datecreation;
 	private String etat;
-	private Integer nombreelements;
 	private String description;
 	private Set produits = new HashSet(0);
 

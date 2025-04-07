@@ -74,7 +74,13 @@
 
 
 			 <mapping class="com.gescom.model.Role"/>
-			 <mapping class="com.gescom.model.Utilisateur"/>
-			 <mapping class="com.gescom.model.Famille"/>
+			  <mapping class="com.gescom.model.Produit"/>
+			   <mapping class="com.gescom.model.Article"/>
+			   <mapping class="com.gescom.model.CategorieArticle"/>
+			    <mapping class="com.gescom.model.Variante"/>
+			     <mapping class="com.gescom.model.ArticleVariante"/>
+			      <mapping class="com.gescom.model.Fournisseur"/>			       
+			      <mapping class="com.gescom.model.Utilisateur"/>
+			      <mapping class="com.gescom.model.Famille"/>
     </session-factory>
 </hibernate-configuration>

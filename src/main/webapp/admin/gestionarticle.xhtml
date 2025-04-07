@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Gestion des Articles</title>
+    <style>
+        .small-column { width: 100px; }
+        .medium-column { width: 150px; }
+        .status-active { background: #C8E6C9; color: #256029; }
+        .status-inactive { background: #FFCDD2; color: #C63737; }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="form">
+        <p:growl id="messages" showDetail="true"/>
+
+        <p:toolbar style="margin-bottom:20px">
+            <f:facet name="left">
+                <h3>Gestion des Articles</h3>
+            </f:facet>
+            <f:facet name="right">
+                <p:commandButton value="Ajouter" icon="pi pi-plus"
+                                action="#{articleBean.prepareCreate}"
+                                update=":form:articleDialog"
+                                oncomplete="PF('articleDialog').show()"
+                                styleClass="p-button-success"/>
+            </f:facet>
+        </p:toolbar>
+
+        <!-- DataTable -->
+        <p:dataTable id="articlesTable" var="article" value="#{articleBean.articles}"
+                     paginator="true" rows="10" styleClass="p-datatable-striped"
+                     emptyMessage="Aucun article trouvé">
+
+            <p:column headerText="SKU" sortBy="#{article.sku}" styleClass="medium-column">
+                <h:outputText value="#{article.sku}"/>
+            </p:column>
+
+            <p:column headerText="Produit">
+                <h:outputText value="#{article.produit.nom}"/>
+            </p:column>
+
+            <p:column headerText="Prix HT" styleClass="small-column">
+                <h:outputText value="#{article.prixVenteHT}">
+                    <f:convertNumber type="currency" currencySymbol=""/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Stock" styleClass="small-column">
+                <h:outputText value="#{article.stockDisponible}"/>
+            </p:column>
+
+            <p:column headerText="Statut" styleClass="small-column">
+                <p:commandButton value="#{article.etat eq 'ACTIF' ? 'Actif' : 'Inactif'}"
+                                styleClass="#{article.etat eq 'ACTIF' ? 'status-active' : 'status-inactive'}"
+                                action="#{articleBean.toggleStatus(article)}"
+                                update=":form:articlesTable :messages"/>
+            </p:column>
+
+            <p:column headerText="Actions" styleClass="medium-column">
+                <p:commandButton icon="pi pi-pencil" title="Modifier"
+                                action="#{articleBean.prepareEdit(article)}"
+                                update=":form:articleDialog"
+                                oncomplete="PF('articleDialog').show()"
+                                styleClass="p-button-rounded p-button-text"/>
+
+                <p:commandButton icon="pi pi-trash" title="Supprimer"
+                                action="#{articleBean.deleteArticle(article)}"
+                                update=":form:articlesTable :messages"
+                                styleClass="p-button-rounded p-button-danger p-button-text"/>
+            </p:column>
+        </p:dataTable>
+
+        <!-- Dialog Article -->
+        <p:dialog id="articleDialog" header="Article" widgetVar="articleDialog"
+                  modal="true" width="650px" height="auto">
+
+            <h:panelGrid columns="2" cellpadding="5" style="width:100%">
+                <p:outputLabel for="sku" value="SKU *"/>
+                <p:inputText id="sku" value="#{articleBean.selectedArticle.sku}"
+                            required="true" style="width:100%"/>
+
+                <p:outputLabel for="produit" value="Produit *"/>
+                <p:selectOneMenu id="produit" value="#{articleBean.selectedArticle.produit}"
+                                required="true" style="width:100%">
+                    <f:selectItems value="#{produitBean.produits}" var="prod"
+                                 itemLabel="#{prod.nom}" itemValue="#{prod}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="prixVente" value="Prix Vente HT *"/>
+                <p:inputNumber id="prixVente" value="#{articleBean.selectedArticle.prixVenteHT}"
+                              required="true" style="width:100%"/>
+
+                <p:outputLabel for="stock" value="Stock Initial"/>
+                <p:inputNumber id="stock" value="#{articleBean.selectedArticle.stockDisponible}"
+                              style="width:100%"/>
+
+                <p:outputLabel for="tva" value="Taux TVA (%)"/>
+                <p:inputNumber id="tva" value="#{articleBean.selectedArticle.tauxTVA}"
+                              style="width:100%"/>
+
+                <p:outputLabel for="codeBarre" value="Code Barre"/>
+                <p:inputText id="codeBarre" value="#{articleBean.selectedArticle.codeBarre}"/>
+            </h:panelGrid>
+
+            <!-- Variantes -->
+            <p:fieldset legend="Variantes" style="margin-top:20px">
+                <p:dataList id="variantesList" value="#{articleBean.selectedArticle.variantes}" var="var">
+                    #{var.typeVariante}: #{var.valeurVariante}
+                </p:dataList>
+            </p:fieldset>
+
+            <f:facet name="footer">
+                <p:commandButton value="Enregistrer" icon="pi pi-check"
+                                action="#{articleBean.saveArticle}"
+                                update=":form:articlesTable :messages"
+                                oncomplete="if(!args.validationFailed) PF('articleDialog').hide()"/>
+
+                <p:commandButton value="Annuler" icon="pi pi-times"
+                                onclick="PF('articleDialog').hide()"
+                                styleClass="p-button-secondary"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+</h:body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Gestion des Produits</title>
+    <style>
+        .action-column {
+            width: 120px;
+            text-align: center;
+        }
+        .card {
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="form">
+        <!-- Messages -->
+        <p:growl id="messages" showDetail="true" sticky="false"/>
+
+        <!-- Card Principale -->
+        <p:card styleClass="card">
+            <f:facet name="title">
+                <div class="p-d-flex p-jc-between p-ai-center">
+                    <span>Gestion des Produits</span>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus"
+                                    action="#{produitBean.prepareCreate}"
+                                    update=":form:productDialog"
+                                    oncomplete="PF('productDialog').show()"
+                                    styleClass="p-button-success"/>
+                </div>
+            </f:facet>
+
+            <!-- DataTable -->
+            <p:dataTable id="productsTable" var="produit" value="#{produitBean.produits}"
+                         paginator="true" rows="10" styleClass="p-datatable-gridlines"
+                         emptyMessage="Aucun produit trouvé">
+
+                <!-- Colonnes -->
+                <p:column headerText="Référence" sortBy="#{produit.reference}">
+                    <h:outputText value="#{produit.reference}"/>
+                </p:column>
+
+                <p:column headerText="Nom" sortBy="#{produit.nom}">
+                    <h:outputText value="#{produit.nom}"/>
+                </p:column>
+
+                <p:column headerText="Famille">
+                    <h:outputText value="#{produit.famille.nom}"/>
+                </p:column>
+
+                <p:column headerText="État">
+                    <p:tag value="#{produit.etat}" 
+                           severity="#{produit.etat eq 'ACTIF' ? 'success' : 'warning'}"/>
+                </p:column>
+
+                <p:column headerText="Actions" styleClass="action-column">
+                    <p:commandButton icon="pi pi-pencil" title="Modifier"
+                                    styleClass="p-button-rounded p-button-text"
+                                    action="#{produitBean.prepareEdit(produit)}"
+                                    update=":form:productDialog"
+                                    oncomplete="PF('productDialog').show()"/>
+
+                    <p:commandButton icon="pi pi-trash" title="Supprimer"
+                                    styleClass="p-button-rounded p-button-danger p-button-text"
+                                    action="#{produitBean.deleteProduit(produit)}"
+                                    update=":messages :form:productsTable">
+                        <p:confirm header="Confirmation" 
+                                  message="Supprimer ce produit ?" 
+                                  icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </p:card>
+
+        <!-- Dialog Ajout/Modification -->
+        <p:dialog id="productDialog" header="Produit" widgetVar="productDialog"
+                  modal="true" resizable="false" width="600px">
+
+            <h:panelGrid columns="2" cellpadding="5">
+                <p:outputLabel for="reference" value="Référence *"/>
+                <p:inputText id="reference" value="#{produitBean.selectedProduit.reference}"
+                            required="true" requiredMessage="Champ obligatoire"/>
+
+                <p:outputLabel for="nom" value="Nom *"/>
+                <p:inputText id="nom" value="#{produitBean.selectedProduit.nom}"
+                            required="true"/>
+
+                <p:outputLabel for="famille" value="Famille *"/>
+                <p:selectOneMenu id="famille" value="#{produitBean.selectedProduit.famille}"
+                                required="true" style="width:100%">
+                    <f:selectItems value="#{familleBean.familles}" var="fam"
+                                 itemLabel="#{fam.nom}" itemValue="#{fam}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="marque" value="Marque"/>
+                <p:inputText id="marque" value="#{produitBean.selectedProduit.marque}"/>
+
+                <p:outputLabel for="description" value="Description"/>
+                <p:inputTextarea id="description" value="#{produitBean.selectedProduit.description}"
+                                rows="3" style="width:100%"/>
+            </h:panelGrid>
+
+            <f:facet name="footer">
+                <p:commandButton value="Enregistrer" icon="pi pi-check"
+                                action="#{produitBean.saveProduit}"
+                                update=":messages :form:productsTable"
+                                oncomplete="if(!args.validationFailed) PF('productDialog').hide()"/>
+
+                <p:commandButton value="Annuler" icon="pi pi-times"
+                                onclick="PF('productDialog').hide()"
+                                styleClass="p-button-secondary"/>
+            </f:facet>
+        </p:dialog>
+
+        <!-- Confirmation -->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Oui" type="button" styleClass="p-button-confirm"/>
+            <p:commandButton value="Non" type="button" styleClass="p-button-secondary"/>
+        </p:confirmDialog>
+    </h:form>
+</h:body>
+</html>
