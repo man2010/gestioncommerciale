@@ -6,6 +6,7 @@ import com.gescom.model.Produit;
 import com.gescom.utils.SpringUtils;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.util.List;

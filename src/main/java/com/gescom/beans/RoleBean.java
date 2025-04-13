@@ -2,7 +2,7 @@ package com.gescom.beans;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
 import com.gescom.dao.RoleHome;
@@ -11,7 +11,7 @@ import java.util.List;
 import com.gescom.utils.SpringUtils; // Assurez-vous d'avoir cette classe
 
 @ManagedBean(name="roleBean")
-@SessionScoped
+@ViewScoped
 public class RoleBean {
 	
 	/**/

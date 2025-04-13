@@ -50,8 +50,9 @@
                     <h:outputText value="#{produit.nom}"/>
                 </p:column>
 
-                <p:column headerText="Famille">
-                    <h:outputText value="#{produit.famille.nom}"/>
+                 
+                <p:column headerText="Famille" for="parent" value="Parent:" rendered="#{familleBean.selectedParent != null}">
+                    <h:outputText value="#{produit.famille.nom}" rendered="#{familleBean.selectedParent != null}"/>
                 </p:column>
 
                 <p:column headerText="État">
@@ -69,7 +70,7 @@
                     <p:commandButton icon="pi pi-trash" title="Supprimer"
                                     styleClass="p-button-rounded p-button-danger p-button-text"
                                     action="#{produitBean.deleteProduit(produit)}"
-                                    update=":messages :form:productsTable">
+                                    update=":form:messages :form:productsTable">
                         <p:confirm header="Confirmation" 
                                   message="Supprimer ce produit ?" 
                                   icon="pi pi-exclamation-triangle"/>
@@ -109,7 +110,7 @@
             <f:facet name="footer">
                 <p:commandButton value="Enregistrer" icon="pi pi-check"
                                 action="#{produitBean.saveProduit}"
-                                update=":messages :form:productsTable"
+                                update=":form:messages :form:productsTable"
                                 oncomplete="if(!args.validationFailed) PF('productDialog').hide()"/>
 
                 <p:commandButton value="Annuler" icon="pi pi-times"

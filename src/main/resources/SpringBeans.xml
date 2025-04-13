@@ -11,33 +11,36 @@
     <bean id="utilisateur" class="com.gescom.model.Utilisateur"/>
     <bean id="utilisateurhome" class="com.gescom.dao.UtilisateurHome"/>
     
-    <bean id="famille" class="com.gescom.model.Famille" scope="prototype"/>
+    <bean id="famille" class="com.gescom.model.Famille"/>
     <bean id="famillehome" class="com.gescom.dao.FamilleHome"/>
-    <bean id="familleBean" class="com.gescom.beans.FamilleBean" scope="view"/>
+   
     
     
     <!-- Produit -->
-<bean id="produit" class="com.gescom.model.Produit" scope="prototype"/>
+<bean id="produit" class="com.gescom.model.Produit"/>
 <bean id="produitHome" class="com.gescom.dao.ProduitHome"/>
 
+<bean id="catalogue" class="com.gescom.model.Catalogue"/>
+<bean id="catalogueHome" class="com.gescom.dao.CatalogueHome"/>
+
 <!-- Article -->
-<bean id="article" class="com.gescom.model.Article" scope="prototype"/>
+<bean id="article" class="com.gescom.model.Article"/>
 <bean id="articleHome" class="com.gescom.dao.ArticleHome"/>
 
 <!-- Fournisseur -->
-<bean id="fournisseur" class="com.gescom.model.Fournisseur" scope="prototype"/>
+<bean id="fournisseur" class="com.gescom.model.Fournisseur"/>
 <bean id="fournisseurHome" class="com.gescom.dao.FournisseurHome"/>
 
 <!-- ArticleVariante -->
 <bean id="articleVarianteHome" class="com.gescom.dao.ArticleVarianteHome"/>
-<bean id="articleVariante" class="com.gescom.dao.ArticleVariante" scope="prototype"/>
+<bean id="articleVariante" class="com.gescom.model.ArticleVariante"/>
 
 <!-- Catégorie Article -->
-<bean id="categorieArticle" class="com.gescom.model.CategorieArticle" scope="prototype"/>
+<bean id="categorieArticle" class="com.gescom.model.CategorieArticle"/>
 <bean id="categorieArticleHome" class="com.gescom.dao.CategorieArticleHome"/>
 
 <!-- Variante -->
-<bean id="variante" class="com.gescom.model.Variante" scope="prototype"/>
+<bean id="variante" class="com.gescom.model.Variante"/>
 <bean id="varianteHome" class="com.gescom.dao.VarianteHome"/>
 
 

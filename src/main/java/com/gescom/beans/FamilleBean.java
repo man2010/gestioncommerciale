@@ -7,9 +7,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+
 import java.util.List;
 
-@ManagedBean
+@ManagedBean(name="familleBean")
 @ViewScoped
 public class FamilleBean {
 	

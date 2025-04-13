@@ -1,10 +1,10 @@
 package com.gescom.beans;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
-import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 
-@Named
+@ManagedBean(name="adminBean")
 @RequestScoped
 public class AdminBean {
     

@@ -4,6 +4,7 @@ import com.gescom.model.Variante;
 import com.gescom.utils.SessionFactoryProvider;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -67,6 +68,19 @@ public class VarianteHome {
             Root<Variante> root = cq.from(Variante.class);
             cq.select(root).where(cb.equal(root.get("produit").get("id"), produitId));
             return session.createQuery(cq).getResultList();
+        }
+    }
+    
+    public Variante findByTypeAndValeur(String type, String valeur) {
+        try (Session session = SessionFactoryProvider.getSessionFactory().openSession()) {
+            Query<Variante> query = session.createQuery(
+                "FROM Variante WHERE type = :type AND valeur = :valeur", 
+                Variante.class);
+            query.setParameter("type", type);
+            query.setParameter("valeur", valeur);
+            return query.uniqueResult();
+        } catch (Exception e) {
+            return null;
         }
     }
 }

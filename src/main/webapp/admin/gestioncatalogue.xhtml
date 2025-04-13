@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Gestion des Catalogues</title>
+    <style>
+        .catalogue-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .catalogue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .status-active {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+        }
+        .status-inactive {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="form">
+        <p:growl id="growl" showDetail="true" sticky="false" />
+        
+        <p:panel header="Gestion des Catalogues" styleClass="mb-4">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Nouveau Catalogue" icon="pi pi-plus" 
+                                    actionListener="#{catalogueBean.prepareCreate}"
+                                    update="@form" oncomplete="PF('catalogueDialog').show()" 
+                                    styleClass="p-button-success" />
+                </p:toolbarGroup>
+                
+                <p:toolbarGroup align="right">
+                    <p:outputLabel value="Total: #{catalogueBean.countCatalogues} catalogues" />
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+            <p:dataTable id="cataloguesTable" var="cat" value="#{catalogueBean.catalogues}" 
+                         paginator="true" rows="10" styleClass="mt-3"
+                         emptyMessage="Aucun catalogue trouvé" rowsPerPageTemplate="5,10,15">
+                
+                <p:column headerText="Code" style="width:120px">
+                    <h:outputText value="#{cat.code}" />
+                </p:column>
+                
+                <p:column headerText="Nom" style="width:200px">
+                    <h:outputText value="#{cat.nom}" />
+                </p:column>
+                
+                <p:column headerText="Date création" style="width:120px">
+                    <h:outputText value="#{cat.datecreation}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="État" style="width:100px">
+                    <p:tag value="#{cat.etat}" 
+                           severity="#{cat.etat eq 'ACTIF' ? 'success' : 'danger'}" />
+                </p:column>
+                
+                <p:column headerText="Actions" style="width:150px;text-align:center">
+                    <p:commandButton icon="pi pi-pencil" title="Modifier" 
+                                     actionListener="#{catalogueBean.prepareEdit(cat)}"
+                                     update="@form" oncomplete="PF('catalogueDialog').show()"
+                                     styleClass="p-button-rounded p-button-text" />
+                    
+                    <p:commandButton icon="pi pi-trash" title="Supprimer" 
+                                     actionListener="#{catalogueBean.prepareDelete(cat)}"
+                                     update=":form:growl" 
+                                     oncomplete="PF('confirmDialog').show()"
+                                     styleClass="p-button-rounded p-button-text p-button-danger" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+        
+        <!-- Dialogue d'édition/création -->
+        <p:dialog id="catalogueDialog" header="Catalogue" widgetVar="catalogueDialog" modal="true" 
+                  resizable="false" styleClass="w-50">
+            <p:panelGrid columns="2" layout="grid" styleClass="w-100" columnClasses="label,value">
+                <p:outputLabel for="code" value="Code *" />
+                <p:inputText id="code" value="#{catalogueBean.selectedCatalogue.code}" 
+                             required="true" requiredMessage="Le code est obligatoire" />
+                
+                <p:outputLabel for="nom" value="Nom *" />
+                <p:inputText id="nom" value="#{catalogueBean.selectedCatalogue.nom}" 
+                             required="true" requiredMessage="Le nom est obligatoire" />
+                
+                <p:outputLabel for="date" value="Date création" />
+                <p:calendar id="date" value="#{catalogueBean.selectedCatalogue.datecreation}" 
+                           pattern="dd/MM/yyyy" readonly="true" />
+                
+                <p:outputLabel for="etat" value="État" />
+                <p:selectOneMenu id="etat" value="#{catalogueBean.selectedCatalogue.etat}">
+                    <f:selectItem itemLabel="ACTIF" itemValue="ACTIF" />
+                    <f:selectItem itemLabel="INACTIF" itemValue="INACTIF" />
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="desc" value="Description" />
+                <p:inputTextarea id="desc" value="#{catalogueBean.selectedCatalogue.description}" 
+                                rows="3" autoResize="true" />
+            </p:panelGrid>
+            
+            <f:facet name="footer">
+                <p:commandButton value="Enregistrer" action="#{catalogueBean.saveCatalogue}" 
+                                update=":form:cataloguesTable,:form:growl" 
+                                oncomplete="PF('catalogueDialog').hide()" 
+                                styleClass="p-button-primary" />
+                <p:commandButton value="Annuler" onclick="PF('catalogueDialog').hide()" 
+                                styleClass="p-button-secondary" immediate="true" />
+            </f:facet>
+        </p:dialog>
+        
+        <!-- Dialogue de confirmation de suppression -->
+        <p:confirmDialog header="Confirmation" message="Êtes-vous sûr de vouloir supprimer ce catalogue ?" 
+                         widgetVar="confirmDialog" appendTo="@(body)">
+            <p:commandButton value="Oui" action="#{catalogueBean.deleteCatalogue}" 
+                            update=":form:cataloguesTable,:form:growl" 
+                            oncomplete="PF('confirmDialog').hide()" 
+                            styleClass="p-button-danger" />
+            <p:commandButton value="Non" onclick="PF('confirmDialog').hide()" 
+                            styleClass="p-button-secondary" />
+        </p:confirmDialog>
+    </h:form>
+</h:body>
+</html>

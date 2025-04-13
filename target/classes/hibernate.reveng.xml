@@ -25,7 +25,7 @@
 <!--   <table-filter match-schema="public" match-name="contrat"/> -->
 <!--   <table-filter match-schema="public" match-name="employe"/> -->
 <!--   <table-filter match-schema="public" match-name="evenement"/> -->
-   <table-filter match-schema="public" match-name="famille"/> 
+<!--    <table-filter match-schema="public" match-name="famille"/>  -->
 <!--   <table-filter match-schema="public" match-name="fluctuationprix"/> -->
 <!--   <table-filter match-schema="public" match-name="gestionnaireboutiques"/> -->
 <!--   <table-filter match-schema="public" match-name="horaireboutique"/> -->
@@ -57,7 +57,7 @@
 <!--   <table-filter match-schema="public" match-name="profile"/> -->
 <!--   <table-filter match-schema="public" match-name="promotion"/> -->
 <!--   <table-filter match-schema="public" match-name="rapport"/> -->
-   <table-filter match-schema="public" match-name="role"/> 
+<!--    <table-filter match-schema="public" match-name="role"/>  -->
 <!--   <table-filter match-schema="public" match-name="salaire"/> -->
 <!--   <table-filter match-schema="public" match-name="salairecontrat"/> -->
 <!--   <table-filter match-schema="public" match-name="session"/> -->
@@ -69,7 +69,7 @@
 <!--   <table-filter match-schema="public" match-name="typeconge"/> -->
 <!--   <table-filter match-schema="public" match-name="typecontrat"/> -->
 <!--   <table-filter match-schema="public" match-name="typeutilisateur"/> -->
-   <table-filter match-schema="public" match-name="utilisateur"/> 
+<!--    <table-filter match-schema="public" match-name="utilisateur"/>  -->
 <!--   <table-filter match-schema="public" match-name="variationprixarticle"/> -->
 <!--   <table-filter match-schema="public" match-name="variete"/> -->
 <!--   <table-filter match-schema="public" match-name="varietesalaire"/> -->
